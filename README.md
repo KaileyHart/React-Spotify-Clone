@@ -1,7 +1,10 @@
 # React-Spotify-Clone
 
-This is a React App that replicates the Spotify Web App UI and some functions such as play and skip. 
-This responsive web app was created using the Spotify API, Material UI, React Context API, HTML, CSS, JavaScript, React, and Node.js.
+
+This is a responsive React App that replicates the Spotify Web App UI and some functionalities, such as play and skip. It was created using the Spotify API, Material UI, React Context API, HTML, CSS, JavaScript, React, and Node.js.
+
+The user will already have to have a Spotify account to log in since user authentication is taken care of by the Spotify API. The app functionalities will only work if the user has Spotify premium, the UI will still work if the user has a free account with Spotify.
+
 
 ## Available Scripts
 
