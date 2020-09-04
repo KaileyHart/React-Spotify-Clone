@@ -1,0 +1,26 @@
+.sidebar {
+    height: 100vh;
+    flex: 0.2;
+    background-color: #040404;
+    color: white;
+    min-width: 230px;
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow-y: overlay;
+}
+.sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+.sidebar > img {
+    object-fit: contain;
+    height: 50px;
+    padding: 15px;
+    margin-right: auto;
+}
+
+.sidebar > hr {
+    border: 1px solid #282828;
+    width: 90%;
+    margin: 10px auto;
+}
