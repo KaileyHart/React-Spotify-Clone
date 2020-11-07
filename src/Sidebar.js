@@ -2,7 +2,7 @@ import React from "react";
 import "./Sidebar.css";
 import SidebarNavOption from "./SidebarNavOption";
 import { useDataLayerValue } from "./DataLayer";
-import {getTokenFromUrl} from './spotify'
+//import {getTokenFromUrl} from './spotify'
 
 //Icons
 import HomeIcon from "@material-ui/icons/Home";
