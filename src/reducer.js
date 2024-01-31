@@ -8,16 +8,11 @@ export const initialState = {
     item: null,
     discover_weekly: null,
     top_artists:null,
-   
-    
-    //REMOVE AFTER FINISHED DEVELOPING...CHANGE TO NULLLLLLLLLLL
-    //token: 'BQCn8qz5hn-qT7ZxQ751ZkzcWRJwEDGjxGgYLFjqj6_cJm-avu…Xo5fU-8G3LIq2RCCcJhCj5000suYPBLVEy8Rdw0xEM6wbJfyg',
 };
 
-//Updating the state w/o overriding your old state
+// * Updating the state w/o overriding your old state
 const reducer = (state, action) => {
-    console.log(action);
-
+    
     switch(action.type) {
         case 'SET_USER':
             return {

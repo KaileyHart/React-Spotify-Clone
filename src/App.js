@@ -35,7 +35,9 @@ function App() {
       });
 
       // * gets the user acct
-      spotify.getMe().then(() => {
+      spotify.getMe().then((user) => {
+
+        console.log("user", user);
 
         dispatch({
           type: "SET_USER",
@@ -46,6 +48,8 @@ function App() {
 
       // * gets the user playlists
       spotify.getUserPlaylists().then((playlists) => {
+
+        console.log("playlists", playlists)
 
         dispatch({
           type: "SET_PLAYLISTS",

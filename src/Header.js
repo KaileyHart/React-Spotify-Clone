@@ -1,26 +1,36 @@
 import React from "react";
-import "./Header.css";
+import { useDataLayerValue } from "./DataLayer";
+import { isEmpty } from "../utilities";
 import SearchIcon from "@mui/icons-material/Search";
 import { Avatar } from "@mui/material";
-import { useDataLayerValue } from "./DataLayer";
 
 function Header() {
-  //Pulls user data from Data Layer
+
+  // * Pulls user data from Data Layer
   const [{ user }, dispatch] = useDataLayerValue();
 
   return (
     <div className="header">
+
       <div className="header__left">
+
         <SearchIcon />
+
         <input
           placeholder="Search for Artists, Songs, or Podcasts"
           type="text"
         />
+
       </div>
+
       <div className="header__right">
-        <Avatar src={user?.images[0]?.url} alt={user?.display_name} />
-        <h4>{user?.display_name}</h4>
+
+        <Avatar src={isEmpty(user) === false && isEmpty(user.images) === false && isEmpty(user.images[0].url) === false ? user.images[0].url : ""} alt={isEmpty(user) === false ? user.display_name : null} />
+
+        <h4>{isEmpty(user) === false ? user.display_name : null}</h4>
+
       </div>
+
     </div>
   );
 }

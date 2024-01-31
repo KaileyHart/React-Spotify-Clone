@@ -15,19 +15,20 @@
   padding: 10px;
 }
 
-.header__left > input {
+.header__left>input {
   border: none;
   width: 100%;
 }
-.header__left > input:focus {
+
+.header__left>input:focus {
   outline: none;
 }
 
 .header__right {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
-.header__right > h4 {
-    margin-left: 10px;
+.header__right>h4 {
+  margin-left: 10px;
 }
