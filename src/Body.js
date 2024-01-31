@@ -3,10 +3,10 @@ import "./Body.css";
 import Header from "./Header";
 import SongRow from "./SongRow";
 import { useDataLayerValue } from "./DataLayer";
-import PlayCircleIcon from "@material-ui/icons/PlayCircleFilled";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import PauseCircleIcon from "@material-ui/icons/PauseCircleFilledOutlined";
+import PlayCircleIcon from "@mui/icons-material/PlayCircleFilled";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import PauseCircleIcon from "@mui/icons-material/PauseCircleFilledOutlined";
 
 function Body({ spotify }) {
   //Pulls discover weekly playlist info from data layer -> reducer.js

@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "spotify-react-web-app",
+    "deploying": "spotify-react-api-app",
+    "build": "spotify-react-api-app"
+  }
+}
