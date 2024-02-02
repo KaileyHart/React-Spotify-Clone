@@ -2,9 +2,12 @@ import React from "react";
 import "./Sidebar.css";
 import SidebarNavOption from "./SidebarNavOption";
 import { useDataLayerValue } from "./DataLayer";
+import { isEmpty } from "../utilities";
 //import {getTokenFromUrl} from './spotify'
 
 import WhiteSpotifyLogo from "./assets/images/Spotify_Logo_White.png";
+
+
 
 // * Icons
 import HomeIcon from "@mui/icons-material/Home";
@@ -29,7 +32,11 @@ function Sidebar() {
       <strong className="sidebar__title">YOUR PLAYLISTS</strong>
       <hr />
 
-        {playlists?.items?.map((playlist) => ( <SidebarNavOption option={playlist.name} />))}
+      {isEmpty(playlists) === false && isEmpty(playlists.items) === false ?
+
+          playlists.items.map((playlist, index) => ( <SidebarNavOption key={index} option={playlist.name} />))
+
+        : null}
       
     </div>
   );

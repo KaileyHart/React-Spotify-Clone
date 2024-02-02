@@ -78,7 +78,6 @@
 
 .dashboard__body {
     display: flex;
-    
 }
 
 .footer {
@@ -92,7 +91,7 @@
     padding: 20px;
 }
 
-.footer > .footer__left {
+.footer>.footer__left {
     flex: 0.5;
     display: flex;
     align-items: center;
@@ -100,7 +99,7 @@
     max-width: 300px;
 }
 
-.footer > .footer__center {
+.footer>.footer__center {
     flex: 0.4;
     padding: 0 100px;
     color: #fff;
@@ -110,13 +109,13 @@
     max-width: 300px;
 }
 
-.footer > .footer__right {
+.footer>.footer__right {
     flex: 0.3;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: #fff;
-    padding-right: 10px; 
+    padding-right: 10px;
 }
 
 .footer__albumCover {
@@ -137,11 +136,11 @@
     transform: scale(1.2) !important;
 }
 
-.footer__songInfo > h4{
+.footer__songInfo>h4 {
     margin-bottom: 5px;
 }
 
-.footer__songInfo > p{
+.footer__songInfo>p {
     font-size: 12px;
 }
 
@@ -166,22 +165,22 @@
   padding: 10px;
 }
 
-.header__left > input {
+.header__left>input {
   border: none;
   width: 100%;
 }
 
-.header__left > input:focus {
+.header__left>input:focus {
   outline: none;
 }
 
 .header__right {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
-.header__right > h4 {
-    margin-left: 10px;
+.header__right>h4 {
+  margin-left: 10px;
 }
 
 * {
