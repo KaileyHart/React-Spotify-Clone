@@ -116,7 +116,7 @@ function Body({ spotify }) {
           <h2>
             <strong>PLAYLIST</strong>
           </h2>
-          <h2> Discover Weekly</h2>
+           <h2>{isEmpty(discover_weekly) === false && isEmpty(discover_weekly.description) === false  ? discover_weekly.name : null}</h2>
           <p>{isEmpty(discover_weekly) === false && isEmpty(discover_weekly.description) === false  ? discover_weekly.description : null}</p>
         </div>
       </div>

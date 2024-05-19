@@ -18,13 +18,11 @@ function App() {
   const [{ token }, dispatch] = useDataLayerValue();
   const [discoverWeeklyData, setDiscoverWeeklyData] = useState("");
 
-  let discoverWeeklyPlaylistID = "";
-  
   const findDiscoverWeeklyPlaylist = (token) => {
 
     if (isEmpty(token) === false) {
 
-      // Make a GET request to a public API endpoint
+      // * Make a GET request to Spotify Search API
       fetch('https://api.spotify.com/v1/search?q=discoverweekly&type=playlist&limit=1', { 
         method: "GET",
         headers: new Headers({
@@ -32,20 +30,29 @@ function App() {
           "Authorization": `Bearer ${token}`
         })
       })
-      .then(response => response.json())  // Parse the JSON response
+      .then(response => response.json()) 
       .then(data => {
         console.log('Discover Weekly data:', data);
-        // TODO: Check if empty
 
-        console.log(data.playlists.items[0].id)
+       if(isEmpty(data) === false && isEmpty(data.playlists) === false && isEmpty(data.playlists.items[0]) === false && isEmpty(data.playlists.items[0].id) === false ) {
+
+        // console.log(data.playlists.items[0].id);
+
         setDiscoverWeeklyData(data.playlists.items[0].id);
-        discoverWeeklyPlaylistID = data.playlists.items[0].id;
+
+       } else {
+
+        // TODO: Send them to a default playlist
+        setDiscoverWeeklyData("");
+
+       };
+
       })
       .catch(error => {
-        console.error('Error fetching user data:', error);
-      });
 
-      return discoverWeeklyData;
+        console.error('Error fetching user data:', error);
+
+      });
 
     };
 
@@ -54,21 +61,19 @@ function App() {
  
   useEffect(() => {
 
-    
-
     const hash = getTokenFromUrl();
 
     // * Reset window
     window.location.hash = "";
 
     const _token = hash.access_token;
-    findDiscoverWeeklyPlaylist(_token);
 
     if (isEmpty(_token) === false) {
 
       spotify.setAccessToken(_token);
+
+      findDiscoverWeeklyPlaylist(_token);
   
-     
       dispatch({
         type: "SET_TOKEN",
         token: _token,
@@ -98,23 +103,6 @@ function App() {
 
       });
 
-      // * Use search endpoint. 
-      console.log('DiscoverWeekly:', discoverWeeklyData)
-      // * gets the discover weekly playlist
-      // if (isEmpty(discoverWeeklyData) === false) {
-
-      //   console.log(discoverWeeklyData)
-
-        spotify.getPlaylist(`${discoverWeeklyPlaylistID}`).then((response) => {
-          // 37i9dQZEVXcSajJeVOTSSu
-          dispatch({
-            type: "SET_DISCOVER_WEEKLY",
-            discover_weekly: response,
-          });
-
-        });
-      // };
-
       // * gets top user top artists
       spotify.getMyTopArtists().then((response) => dispatch({
         type: 'SET_TOP_ARTISTS',
@@ -127,9 +115,28 @@ function App() {
         spotify: spotify,
       });
 
-    }
+    };
 
-  }, [token, dispatch, discoverWeeklyData]);
+  }, [token, dispatch]);
+
+  
+  useEffect(() => {
+    
+    if (isEmpty(discoverWeeklyData) === false) {
+      // * Gets the discover weekly playlist unique to the user
+      // * Playlist ID: 22mm5J4DcucnRDLv0BAvti
+      spotify.getPlaylist(`${discoverWeeklyData}`).then((response) => {
+  
+        dispatch({
+          type: "SET_DISCOVER_WEEKLY",
+          discover_weekly: response,
+        });
+
+      });
+    };
+
+  }, [discoverWeeklyData]);
+
 
   return (
     <div className="app">
