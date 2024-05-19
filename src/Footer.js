@@ -20,11 +20,9 @@ function Footer({ spotify }) {
   const [albumCover, setAlbumCover] = useState("");
   const [albumName, setAlbumName] = useState("");
 
-
+  
   // TODO: item is null
   useEffect(() => {
-
-    
 
     if (isEmpty(item) === false) {
 
