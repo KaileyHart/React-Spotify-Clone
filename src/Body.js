@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "./Header";
 import SongRow from "./SongRow";
 import { useDataLayerValue } from "./DataLayer";
@@ -90,7 +90,18 @@ function Body({ spotify }) {
 
   };
 
-  console.log();
+
+  useEffect(()=> {
+
+    if (isEmpty(discover_weekly) === false && discover_weekly.images) {
+
+      console.log(discover_weekly.images[0].url);
+
+    }
+
+  }, [discover_weekly]);
+
+
 
   return (
     <div className="body">
