@@ -38,10 +38,11 @@ function Body({ spotify }) {
       });
   };
 
+
   // * Play and Pause Toggles
   const handlePlayPause = () => {
 
-    if (playing) {
+    if (isEmpty(playing) === false) {
 
       spotify.pause();
 
@@ -64,8 +65,11 @@ function Body({ spotify }) {
   };
 
 
+  // * https://developer.spotify.com/documentation/web-api/reference/start-a-users-playback
   const playSong = (id) => {
 
+    console.log("id:", id);
+    console.log("click", id);
     spotify
       .play({
         uris: [`spotify:track:${id}`],
@@ -123,7 +127,9 @@ function Body({ spotify }) {
         {isEmpty(discover_weekly) === false && isEmpty(discover_weekly.tracks) === false && isEmpty(discover_weekly.tracks.items) === false ? 
 
           discover_weekly.tracks.items.map((item, index) => (
-            <SongRow key={index} playSong={playSong} track={item.track} />
+
+              <SongRow key={item.track.id} playSong={playSong} track={item.track} />
+
           )) 
 
         : null}
