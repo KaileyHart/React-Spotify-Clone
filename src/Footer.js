@@ -20,7 +20,7 @@ function Footer({ spotify }) {
   const [albumCover, setAlbumCover] = useState("");
   const [albumName, setAlbumName] = useState("");
 
-
+  
   // TODO: item is null
   useEffect(() => {
 
@@ -30,7 +30,7 @@ function Footer({ spotify }) {
 
         setAlbumCover(item.album.images[0].url);
 
-      } 
+      };
 
       if (isEmpty(item.name) === false) {
 
@@ -44,6 +44,7 @@ function Footer({ spotify }) {
 
 
   useEffect(() => {
+    
     spotify.getMyCurrentPlaybackState().then((response) => {
 
       dispatch({

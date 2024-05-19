@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "./Header";
 import SongRow from "./SongRow";
 import { useDataLayerValue } from "./DataLayer";
@@ -90,7 +90,6 @@ function Body({ spotify }) {
 
   };
 
-  console.log();
 
   return (
     <div className="body">
@@ -105,7 +104,7 @@ function Body({ spotify }) {
           <h2>
             <strong>PLAYLIST</strong>
           </h2>
-          <h2> Discover Weekly</h2>
+           <h2>{isEmpty(discover_weekly) === false && isEmpty(discover_weekly.description) === false  ? discover_weekly.name : null}</h2>
           <p>{isEmpty(discover_weekly) === false && isEmpty(discover_weekly.description) === false  ? discover_weekly.description : null}</p>
         </div>
       </div>
