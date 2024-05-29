@@ -4,14 +4,16 @@ export const initialState = {
     user: null,
     playlists: [],
     spotify: null,
+    discover_weekly: null,
+    top_artists: null,
     playing: false,
     item: null,
-    discover_weekly: null,
-    top_artists:null,
 };
 
 // * Updating the state w/o overriding your old state
 const reducer = (state, action) => {
+
+    console.log("action",action);
     
     switch(action.type) {
         case 'SET_USER':
@@ -58,6 +60,6 @@ const reducer = (state, action) => {
         default: 
             return state;
     }
-}
+};
 
 export default reducer;

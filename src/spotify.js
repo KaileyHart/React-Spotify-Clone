@@ -7,6 +7,7 @@ export const authEndpoint = "https://accounts.spotify.com/authorize";
 const redirectUri = "http://localhost:3000/";
 
 // * Spotify API Client ID
+// TODO: Move clientID to ENV 
 const clientId = "885c089497a2421baae5d293348f5d42";
 
 //Makes the user agree to terms that we can read the following:
@@ -28,6 +29,9 @@ export const getTokenFromUrl = () => {
       // * #accessToken=1234567890&name=kailey
       let parts = item.split("=");
       initial[parts[0]] = decodeURIComponent(parts[1]);
+
+      console.log("item", item);
+      console.log("initial", initial);
 
       return initial;
     }, {});

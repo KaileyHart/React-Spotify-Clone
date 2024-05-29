@@ -15,13 +15,21 @@ function Body({ spotify }) {
 
   const playPlaylist = (id) => {
 
+    console.log("id:", id);
+   
+
     spotify
       .play({
         context_uri: `spotify:playlist:37i9dQZEVXcRhI3EF1Nhfw`,
       })
       .then((res) => {
+
+    console.log("res:", res);
+
         
         spotify.getMyCurrentPlayingTrack().then((r) => {
+
+          console.log("r", r);
 
           dispatch({
             type: "SET_ITEM",
@@ -75,6 +83,8 @@ function Body({ spotify }) {
         uris: [`spotify:track:${id}`],
       })
       .then((res) => {
+
+        console.log("res", res);
 
         spotify.getMyCurrentPlayingTrack().then((r) => {
 

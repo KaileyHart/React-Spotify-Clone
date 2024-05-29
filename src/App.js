@@ -14,6 +14,7 @@ import { isEmpty } from "../utilities";
 const spotify = new SpotifyWebApi();
 
 function App() {
+  
   // * pull from DataLayer, and then update it
   const [{ token }, dispatch] = useDataLayerValue();
   const [discoverWeeklyData, setDiscoverWeeklyData] = useState("");
@@ -55,6 +56,11 @@ function App() {
       });
 
     };
+
+  };
+
+
+  const findTopArtists = () => {
 
   };
 
