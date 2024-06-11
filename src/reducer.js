@@ -1,5 +1,3 @@
-import {findAllByDisplayValue} from "@testing-library/react";
-
 export const initialState = {
     user: null,
     playlists: [],
@@ -7,13 +5,11 @@ export const initialState = {
     discover_weekly: null,
     top_artists: null,
     playing: false,
-    item: null,
+    item: null
 };
 
 // * Updating the state w/o overriding your old state
 const reducer = (state, action) => {
-
-    console.log("action",action);
     
     switch(action.type) {
         case 'SET_USER':

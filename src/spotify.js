@@ -30,9 +30,6 @@ export const getTokenFromUrl = () => {
       let parts = item.split("=");
       initial[parts[0]] = decodeURIComponent(parts[1]);
 
-      console.log("item", item);
-      console.log("initial", initial);
-
       return initial;
     }, {});
 

@@ -17,7 +17,40 @@ function App() {
   
   // * pull from DataLayer, and then update it
   const [{ token }, dispatch] = useDataLayerValue();
-  const [discoverWeeklyData, setDiscoverWeeklyData] = useState("");
+  // const [discoverWeeklyData, setDiscoverWeeklyData] = useState("");
+  // const [playbackState, setPlaybackState] = useState({});
+
+  // * Get Playback State https://developer.spotify.com/documentation/web-api/reference/get-information-about-the-users-current-playback
+  // ? None of the other functions seems to work without this one first ? -- 06/10/2024
+  const getUserPlaybackState = (token) => {
+
+    if (isEmpty(token) === false) {
+
+      // * Make a GET request to Spotify Player
+      fetch('https://api.spotify.com/v1/me/player', { 
+        method: "GET",
+        headers: new Headers({
+          "Content-Type": "application/json", 
+          "Authorization": `Bearer ${token}`
+        })
+      })
+      .then(response => response.json()) 
+      .then(data => {
+        // console.log('Playback state data:', data);
+
+        // TODO: Set to initial state?
+
+      })
+      .catch(error => {
+
+        console.error('Error fetching user data:', error);
+
+      });
+
+    };
+
+  };
+
 
   const findDiscoverWeeklyPlaylist = (token) => {
 
@@ -33,18 +66,28 @@ function App() {
       })
       .then(response => response.json()) 
       .then(data => {
-        console.log('Discover Weekly data:', data);
+        // console.log('Discover Weekly data:', data);
 
-       if(isEmpty(data) === false && isEmpty(data.playlists) === false && isEmpty(data.playlists.items[0]) === false && isEmpty(data.playlists.items[0].id) === false ) {
+       if(isEmpty(data) === false && isEmpty(data.playlists) === false && isEmpty(data.playlists.items[0]) === false && isEmpty(data.playlists.items[0].id) === false) {
 
         // console.log(data.playlists.items[0].id);
 
-        setDiscoverWeeklyData(data.playlists.items[0].id);
+        // setDiscoverWeeklyData(data.playlists.items[0].id);
+
+        spotify.getPlaylist(`${data.playlists.items[0].id}`).then((response) => {
+
+          dispatch({
+            type: "SET_DISCOVER_WEEKLY",
+            discover_weekly: response,
+          });
+
+        });
 
        } else {
 
         // TODO: Send them to a default playlist
-        setDiscoverWeeklyData("");
+        // setDiscoverWeeklyData("");
+        console.error("No discover weekly data");
 
        };
 
@@ -59,18 +102,14 @@ function App() {
 
   };
 
-
-  const findTopArtists = () => {
-
-  };
-
- 
+  
   useEffect(() => {
 
     const hash = getTokenFromUrl();
 
     // * Reset window
-    window.location.hash = "";
+    // ! This breaks the application
+    // window.location.hash = "";
 
     const _token = hash.access_token;
 
@@ -79,6 +118,7 @@ function App() {
       spotify.setAccessToken(_token);
 
       findDiscoverWeeklyPlaylist(_token);
+      getUserPlaybackState(_token);
   
       dispatch({
         type: "SET_TOKEN",
@@ -88,7 +128,7 @@ function App() {
       // * gets the user acct
       spotify.getMe().then((user) => {
 
-        console.log("user", user);
+        // console.log("user", user);
 
         dispatch({
           type: "SET_USER",
@@ -100,7 +140,7 @@ function App() {
       // * gets the user playlists
       spotify.getUserPlaylists().then((playlists) => {
 
-        console.log("playlists", playlists)
+        // console.log("playlists", playlists)
 
         dispatch({
           type: "SET_PLAYLISTS",
@@ -125,28 +165,10 @@ function App() {
 
   }, [token, dispatch]);
 
-  
-  useEffect(() => {
-    
-    if (isEmpty(discoverWeeklyData) === false) {
-      // * Gets the discover weekly playlist unique to the user
-      // * Playlist ID: 22mm5J4DcucnRDLv0BAvti
-      spotify.getPlaylist(`${discoverWeeklyData}`).then((response) => {
-  
-        dispatch({
-          type: "SET_DISCOVER_WEEKLY",
-          discover_weekly: response,
-        });
-
-      });
-    };
-
-  }, [discoverWeeklyData]);
-
 
   return (
     <div className="app">
-      {token ? <Dashboard spotify={spotify} /> : <Login />}
+      {isEmpty(token) === false ? <Dashboard spotify={spotify} /> : <Login />}
     </div>
   );
 }

@@ -5,7 +5,7 @@ function SongRow({ playSong, track }) {
 
   return (
     /*{ <button onClick={()=> playSong(track.id)}>}*/
-    <div key={track.id} className="songRow">
+    <div onClick={()=> playSong(track.id)} key={track.id} className="songRow">
 
       <img className="songRow__album" src={track.album.images[0].url} alt="Album Cover"/>
 

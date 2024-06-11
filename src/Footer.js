@@ -19,9 +19,9 @@ function Footer({ spotify }) {
   const [{ token, item, playing }, dispatch] = useDataLayerValue();
   const [albumCover, setAlbumCover] = useState("");
   const [albumName, setAlbumName] = useState("");
+  const [albumArtists, setAlbumArtists] = useState([]);
 
   
-  // TODO: item is null
   useEffect(() => {
 
     if (isEmpty(item) === false) {
@@ -35,6 +35,12 @@ function Footer({ spotify }) {
       if (isEmpty(item.name) === false) {
 
         setAlbumName(item.name);
+
+      };
+
+      if (isEmpty(item.artists) === false) {
+
+        setAlbumArtists(item.artists);
 
       };
 
@@ -59,7 +65,7 @@ function Footer({ spotify }) {
 
     });
 
-  }, [spotify]);
+  }, [token, spotify]);
 
 
   const handlePlayPause = () => {
@@ -134,17 +140,18 @@ function Footer({ spotify }) {
 
       <div className="footer__left">
 
-        {/* // TODO: item is null */}
-        {/* <img className="footer__albumCover" src={albumCover} alt={albumName} /> */}
+         {isEmpty(albumName) === false && isEmpty(albumCover) === false && isEmpty(albumArtists) === false  ? 
 
-         {isEmpty(item) === false ? 
-
-          (<div className="footer__songInfo">
-              <h4>{item.name}</h4>
-              <p>{item.artists.map((artist) => artist.name).join(", ")}</p>
-            </div>)
+          (<React.Fragment> 
+              <img className="footer__albumCover" src={albumCover} alt={albumName} /> 
+              <div className="footer__songInfo">
+                <h4>{albumName}</h4>
+                <p>{albumArtists.map((artist) => artist.name).join(", ")}</p>
+              </div>
+            </React.Fragment>)
 
           :
+
           (<div className="footer__songInfo">
               <h4>No song is playing</h4>
               <p>...</p>

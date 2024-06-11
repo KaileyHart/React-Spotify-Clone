@@ -11,25 +11,22 @@ import PauseCircleIcon from "@mui/icons-material/PauseCircleFilledOutlined";
 function Body({ spotify }) {
 
   // * Pulls discover weekly playlist info from data layer -> reducer.js
-  const [{ discover_weekly, user, playing }, dispatch] = useDataLayerValue();
+  const [{ discover_weekly, user, playing, token}, dispatch] = useDataLayerValue();
 
-  const playPlaylist = (id) => {
 
-    console.log("id:", id);
+  const playPlaylist = (discover_weekly) => {
    
-
     spotify
       .play({
-        context_uri: `spotify:playlist:37i9dQZEVXcRhI3EF1Nhfw`,
+        context_uri: `${discover_weekly.uri}`,
       })
       .then((res) => {
 
-    console.log("res:", res);
+    // console.log("res:", res);
 
-        
         spotify.getMyCurrentPlayingTrack().then((r) => {
 
-          console.log("r", r);
+          // console.log("r", r);
 
           dispatch({
             type: "SET_ITEM",
@@ -74,33 +71,74 @@ function Body({ spotify }) {
 
 
   // * https://developer.spotify.com/documentation/web-api/reference/start-a-users-playback
+  // const playSongOLD = (token, id) => {
+
+  //   spotify
+  //     .play({
+  //       uris: [`spotify:track:${id}`],
+  //     })
+  //     .then((res) => {
+
+  //       spotify.getMyCurrentPlayingTrack().then((r) => {
+
+  //         dispatch({
+  //           type: "SET_ITEM",
+  //           item: r.item,
+  //         });
+
+  //         dispatch({
+  //           type: "SET_PLAYING",
+  //           playing: true,
+  //         });
+
+  //       });
+
+  //     });
+
+  // };
+
+  // TODO: This is throwing an error
   const playSong = (id) => {
 
-    console.log("id:", id);
-    console.log("click", id);
-    spotify
-      .play({
-        uris: [`spotify:track:${id}`],
+    if (isEmpty(id) === false && isEmpty(token) === false) {
+
+      // * Make a GET request to Spotify Search API
+      fetch('https://api.spotify.com/v1/me/player/play', { 
+        method: "PUT",
+        headers: new Headers({
+          "Content-Type": "application/json", 
+          "Authorization": `Bearer ${token}`,
+         
+        }),
+        "data": JSON.stringify({
+          uris: [`spotify:track:${id}`]
+        })
       })
-      .then((res) => {
+      .then(response => response.json()) 
+      .then(data => {
+        // console.log('data', data);
 
-        console.log("res", res);
+       // message: "Player command failed: Restriction violated"
+       // reason: "UNKNOWN"
+       // status: 403
 
-        spotify.getMyCurrentPlayingTrack().then((r) => {
 
-          dispatch({
-            type: "SET_ITEM",
-            item: r.item,
-          });
+       if(isEmpty(data) === false ) {
 
-          dispatch({
-            type: "SET_PLAYING",
-            playing: true,
-          });
+      
+       } else {
 
-        });
+
+       };
+
+      })
+      .catch(error => {
+
+        console.error('Error fetching user data:', error);
 
       });
+
+    };
 
   };
 
@@ -127,7 +165,7 @@ function Body({ spotify }) {
 
         <div className="body__icons">
 
-          {playing === true ? ( <PauseCircleIcon onClick={handlePlayPause} fontSize="large" className="body__shuffle"/>) : ( <PlayCircleIcon onClick={playPlaylist} fontSize="large" className="body__shuffle"/>)}
+          {playing === true ? ( <PauseCircleIcon onClick={handlePlayPause} fontSize="large" className="body__shuffle"/>) : ( <PlayCircleIcon onClick={() => playPlaylist(discover_weekly)} fontSize="large" className="body__shuffle"/>)}
 
           <FavoriteIcon fontSize="large" className="body__favorite" />
           <MoreHorizIcon className="body__more" />
