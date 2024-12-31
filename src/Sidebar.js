@@ -7,8 +7,6 @@ import { isEmpty } from "../utilities";
 
 import WhiteSpotifyLogo from "./assets/images/Spotify_Logo_White.png";
 
-
-
 // * Icons
 import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
@@ -34,7 +32,10 @@ function Sidebar() {
 
       {isEmpty(playlists) === false && isEmpty(playlists.items) === false ?
 
-          playlists.items.map((playlist, index) => ( <SidebarNavOption key={index} option={playlist.name} />))
+          playlists.items.map((playlist, index) => (
+          <SidebarNavOption key={index} option={playlist.name} image={playlist.images[2].url} />
+          
+          ))
 
         : null}
       

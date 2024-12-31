@@ -2,20 +2,33 @@
     display: flex;
     align-items: center;
     color: grey;
-    height: 40px;
+    /* height: 40px; */
     cursor: pointer;
     transition: 150ms color ease-in;
+
+    p {
+        font-weight: 600;
+        font-size: 16px;
+        font-family: SpotifyMixUI, CircularSp-Arab, CircularSp-Hebr, CircularSp-Cyrl, CircularSp-Grek, CircularSp-Deva, "Helvetica Neue", helvetica, arial, "Hiragino Kaku Gothic ProN", Meiryo, "MS Gothic";
+    }
 
 }
 
 .sidebarNavOption:hover {
     color: #fff;
-    
+    background-color: #1F1F1F;
 }
 
 .sidebarNavOption__icon {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 0px 10px;
+}
+
+.sidebarNavOption__albumCover {
+    height: 50px;
+    width: 50px;
+    padding: 10px;
+    object-fit: contain;
+    border-radius: 15px;
 }
 
 .sidebar__title {
@@ -28,7 +41,7 @@
 .sidebarNavOption > p {
     margin-top: 10px;
     margin-left: 20px;
-    font-size: 14px;
+    /* font-size: 14px; */
 }
 
 
