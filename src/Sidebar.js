@@ -22,22 +22,28 @@ function Sidebar() {
     
       <img src={WhiteSpotifyLogo} alt="Logo" />
 
-      <SidebarNavOption option="Home" Icon={HomeIcon} />
-      <SidebarNavOption option="Search" Icon={SearchIcon} />
+      {/* <SidebarNavOption option="Home" Icon={HomeIcon} /> */}
+     
       <SidebarNavOption option="Your Library" Icon={LibraryMusicIcon} />
+
+      {/* // TODO: Add pill buttons for "Playlists", "Albums", "Podcasts & Shows", "Audiobooks" */}
+
+      {/* <SidebarNavOption option="Search" Icon={SearchIcon} /> */}
 
       <br />
       <strong className="sidebar__title">YOUR PLAYLISTS</strong>
       <hr />
 
+      
       {isEmpty(playlists) === false && isEmpty(playlists.items) === false ?
 
           playlists.items.map((playlist, index) => (
-          <SidebarNavOption key={index} option={playlist.name} image={playlist.images[2].url} />
-          
+          <SidebarNavOption key={index} option={playlist.name} image={playlist.images[2].url} playlistID={playlist.id} />
           ))
 
         : null}
+
+        
       
     </div>
   );
