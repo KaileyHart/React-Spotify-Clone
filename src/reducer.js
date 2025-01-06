@@ -8,6 +8,7 @@ export const initialState = {
     item: null,
     discover_weekly: null,
     top_artists:null,
+    top_tracks:null,
 };
 
 // * Updating the state w/o overriding your old state
@@ -34,7 +35,11 @@ const reducer = (state, action) => {
                 ...state,
                 top_artists: action.top_artists,
             }
-        
+        case 'SET_TOP_TRACKS': 
+            return {
+                ...state,
+                top_tracks: action.top_tracks,
+            }
         case 'SET_TOKEN': 
             return {
                 ...state,

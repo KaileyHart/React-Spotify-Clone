@@ -11,7 +11,7 @@ import PauseCircleIcon from "@mui/icons-material/PauseCircleFilledOutlined";
 function Body({ spotify }) {
 
   // * Pulls discover weekly playlist info from data layer -> reducer.js
-  const [{ discover_weekly, user, playing }, dispatch] = useDataLayerValue();
+  const [{user, playing, top_tracks }, dispatch] = useDataLayerValue();
 
   const playPlaylist = (id) => {
 
@@ -99,14 +99,13 @@ function Body({ spotify }) {
 
       <div className="body__info">
 
-        {isEmpty(discover_weekly) === false && isEmpty(discover_weekly.images[0].url) === false ? <img src={discover_weekly.images[0].url} alt="Album" /> : null}
+        {/* Pulls the first album image in the list*/}
+        {isEmpty(top_tracks) === false && isEmpty(top_tracks.items[0].album.images[0].url) === false ? <img src={top_tracks.items[0].album.images[0].url} alt="Album" /> : null}
 
         <div className="body__infoText">
-          <h2>
-            <strong>PLAYLIST</strong>
-          </h2>
-          <h2> Discover Weekly</h2>
-          <p>{isEmpty(discover_weekly) === false && isEmpty(discover_weekly.description) === false  ? discover_weekly.description : null}</p>
+          <h2>Your Top Tracks</h2>
+          {/* <p>{isEmpty(discover_weekly) === false && isEmpty(discover_weekly.description) === false  ? discover_weekly.description : null}</p> */}
+          <p>Your top tracks from the past year.</p>
         </div>
       </div>
 
@@ -121,10 +120,10 @@ function Body({ spotify }) {
 
         </div>
 
-        {isEmpty(discover_weekly) === false && isEmpty(discover_weekly.tracks) === false && isEmpty(discover_weekly.tracks.items) === false ? 
+        {isEmpty(top_tracks) === false && isEmpty(top_tracks.items) === false && isEmpty(top_tracks.items) === false ? 
 
-          discover_weekly.tracks.items.map((item, index) => (
-            <SongRow key={index} playSong={playSong} track={item.track} />
+          top_tracks.items.map((item, index) => (
+            <SongRow key={index} playSong={playSong} track={item} />
           )) 
 
         : null}

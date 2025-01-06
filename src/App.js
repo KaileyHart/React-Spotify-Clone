@@ -68,10 +68,16 @@ function App() {
 
       });
 
-      // * gets top user top artists
+      // * gets top user top artists from the past 6 months
       spotify.getMyTopArtists().then((response) => dispatch({
         type: 'SET_TOP_ARTISTS',
         top_artists: response,
+      }));
+
+      // * gets top user top tracks from the past 6 months
+      spotify.getMyTopTracks().then((response) => dispatch({
+        type: 'SET_TOP_TRACKS',
+        top_tracks: response,
       }));
 
       // * gets spotify 
