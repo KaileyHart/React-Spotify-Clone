@@ -3,7 +3,6 @@ import "./Sidebar.css";
 import SidebarNavOption from "./SidebarNavOption";
 import { useDataLayerValue } from "./DataLayer";
 import { isEmpty } from "../utilities";
-//import {getTokenFromUrl} from './spotify'
 
 import WhiteSpotifyLogo from "./assets/images/Spotify_Logo_White.png";
 

@@ -1,43 +1,39 @@
 import React, { useEffect } from "react";
 import SpotifyWebApi from "spotify-web-api-js";
-import { getTokenFromUrl } from "./spotify";
+import { redirectToSpotifyAuthorize } from "./spotify";
+import { isEmpty } from "../utilities";
 
 // * Components
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 import { useDataLayerValue } from "./DataLayer";
-import { MyLocation } from "@mui/icons-material";
 
 // * https://github.com/JMPerez/spotify-web-api-js
 // * Allows react to communicate with the Spotify API
 const spotify = new SpotifyWebApi();
 
 function App() {
+
   // * pull from DataLayer, and then update it
   const [{ token }, dispatch] = useDataLayerValue();
+
+  let access_token = localStorage.getItem('access_token');
  
   useEffect(() => {
 
-    const hash = getTokenFromUrl();
+    if (isEmpty(access_token) === false) {
 
-    // * Reset window
-    window.location.hash = "";
-
-    const _token = hash.access_token;
-
-    if (_token) {
-
-      spotify.setAccessToken(_token);
+      spotify.setAccessToken(access_token);
      
       dispatch({
         type: "SET_TOKEN",
-        token: _token,
+        token: access_token,
       });
 
       // * gets the user acct
       spotify.getMe().then((user) => {
 
-        console.log("user", user);
+        // console.log("user", user);
 
         dispatch({
           type: "SET_USER",
@@ -54,16 +50,6 @@ function App() {
         dispatch({
           type: "SET_PLAYLISTS",
           playlists: playlists,
-        });
-
-      });
-
-      // * gets the discover weekly playlist
-      spotify.getPlaylist("37i9dQZEVXcRhI3EF1Nhfw").then((response) => {
-
-        dispatch({
-          type: "SET_DISCOVER_WEEKLY",
-          discover_weekly: response,
         });
 
       });
@@ -86,13 +72,13 @@ function App() {
         spotify: spotify,
       });
 
-    }
+    };
 
   }, [token, dispatch]);
 
   return (
     <div className="app">
-      {token ? <Dashboard spotify={spotify} /> : <Login />}
+      {access_token ? <Dashboard spotify={spotify}  /> : <Login redirectToSpotifyAuthorize={redirectToSpotifyAuthorize}/>}
     </div>
   );
 }
