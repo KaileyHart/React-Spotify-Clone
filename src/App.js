@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import SpotifyWebApi from "spotify-web-api-js";
-import { redirectToSpotifyAuthorize } from "./spotify";
+import { redirectToSpotifyAuthorize, refreshToken, getRefreshToken } from "./spotify";
 import { isEmpty } from "../utilities";
 
 // * Components
@@ -18,17 +18,40 @@ function App() {
   const [{ token }, dispatch] = useDataLayerValue();
 
   let access_token = localStorage.getItem('access_token');
+  let expires = localStorage.getItem('expires');
+
+  const checkAccessTokenExpiration = (expires) => {
+
+    let today = new Date();
+    let compareDate = new Date(expires);
+    let timeInMilliseconds = compareDate.getTime() - today.getTime();
+
+    return timeInMilliseconds;
+
+  };
  
   useEffect(() => {
 
     if (isEmpty(access_token) === false) {
 
       spotify.setAccessToken(access_token);
+
+      let time = checkAccessTokenExpiration(expires);
+
+      console.log("time", time < 0);
+
+      if (time < 0) {
+
+        // refreshToken();
+        getRefreshToken();
+
+      };
      
       dispatch({
         type: "SET_TOKEN",
         token: access_token,
       });
+
 
       // * gets the user acct
       spotify.getMe().then((user) => {
@@ -45,7 +68,7 @@ function App() {
       // * gets the user playlists
       spotify.getUserPlaylists().then((playlists) => {
 
-        console.log("playlists", playlists)
+        // console.log("playlists", playlists);
 
         dispatch({
           type: "SET_PLAYLISTS",
@@ -75,6 +98,7 @@ function App() {
     };
 
   }, [token, dispatch]);
+
 
   return (
     <div className="app">

@@ -8,7 +8,7 @@ function Login({redirectToSpotifyAuthorize}) {
 
             <img src={WhiteSpotifyLogo} alt="White Spotify Logo"/>
             
-            <a  onClick={redirectToSpotifyAuthorize()}>LOGIN WITH SPOTIFY</a>
+            <a onClick={redirectToSpotifyAuthorize}>LOGIN WITH SPOTIFY</a>
             
         </div>
     );

@@ -3,12 +3,13 @@ import {findAllByDisplayValue} from "@testing-library/react";
 export const initialState = {
     user: null,
     playlists: [],
+    playlist: null,
     spotify: null,
     playing: false,
     item: null,
     discover_weekly: null,
-    top_artists:null,
-    top_tracks:null,
+    top_artists: null,
+    top_tracks: null,
 };
 
 // * Updating the state w/o overriding your old state
@@ -59,6 +60,11 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 spotify: action.spotify,
+            } 
+        case 'SET_PLAYLIST':
+            return {
+                ...state,
+                playlist: action.playlist,
             } 
         default: 
             return state;

@@ -58,6 +58,29 @@ const currentToken = {
 const args = new URLSearchParams(window.location.search);
 const code = args.get('code');
 
+// * Soptify API Calls
+const getToken = async (code) => {
+
+  const code_verifier = localStorage.getItem('code_verifier');
+
+  const response = await fetch(tokenEndpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      client_id: clientId,
+      grant_type: 'authorization_code',
+      code: code,
+      redirect_uri: redirectUrl,
+      code_verifier: code_verifier,
+    }),
+  });
+
+  return await response.json();
+};
+
+
 // * If we find a code, we're in a callback, do a token exchange
 if (code) {
 
@@ -109,30 +132,9 @@ export const redirectToSpotifyAuthorize = async () => {
 
 };
 
-// * Soptify API Calls
-const getToken = async (code) => {
 
-  const code_verifier = localStorage.getItem('code_verifier');
+export const refreshToken = async () => {
 
-  const response = await fetch(tokenEndpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
-      client_id: clientId,
-      grant_type: 'authorization_code',
-      code: code,
-      redirect_uri: redirectUrl,
-      code_verifier: code_verifier,
-    }),
-  });
-
-  return await response.json();
-};
-
-
-const refreshToken = async () => {
   const response = await fetch(tokenEndpoint, {
     method: 'POST',
     headers: {
@@ -145,8 +147,48 @@ const refreshToken = async () => {
     }),
   });
 
-  return await response.json();
+  // console.log(response.json());
+  console.log("response", response);
+
+  return await response;
+
 };
+
+
+export const getRefreshToken = async () => {
+
+  // * Refresh token that has been previously stored
+  const refreshToken = localStorage.getItem('refresh_token');
+  const url = "https://accounts.spotify.com/api/token";
+
+   const payload = {
+     method: 'POST',
+     headers: {
+       'Content-Type': 'application/x-www-form-urlencoded'
+     },
+     body: new URLSearchParams({
+       grant_type: 'refresh_token',
+       refresh_token: refreshToken,
+       client_id: clientId
+     }),
+   };
+
+   const body = await fetch(url, payload);
+   const response = await body.json();
+
+   localStorage.setItem('access_token', response.accessToken);
+
+   if (isEmpty(response.refreshToken) === false) {
+
+     localStorage.setItem('refresh_token', response.refreshToken);
+
+   } else {
+
+    logoutClick();
+
+   };
+
+ };
 
 
 const getUserData = async () => {
@@ -158,7 +200,7 @@ const getUserData = async () => {
 
   });
 
-  return await response.json();
+  return await response;
 
 };
 
@@ -186,4 +228,4 @@ const refreshTokenClick = async () => {
 
   currentToken.save(token);
 
-}
+};

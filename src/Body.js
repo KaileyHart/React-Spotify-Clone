@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Header from "./Header";
 import SongRow from "./SongRow";
 import { useDataLayerValue } from "./DataLayer";
@@ -11,7 +11,79 @@ import PauseCircleIcon from "@mui/icons-material/PauseCircleFilledOutlined";
 function Body({ spotify }) {
 
   // * Pulls discover weekly playlist info from data layer -> reducer.js
-  const [{user, playing, top_tracks }, dispatch] = useDataLayerValue();
+  const [{user, playlist, playing, top_tracks }, dispatch] = useDataLayerValue();
+
+  const [currentPlaylist, setCurrentPlaylist] = useState({});
+
+  const [playlistAlbumURL, setPlaylistAlbumURL] = useState("");
+  const [playlistTitle, setPlaylistTitle] = useState("");
+  const [playlistDescription, setPlaylistDescription] = useState("");
+
+  const [playlistItems, setPlaylistItems] = useState([]);
+
+
+  useEffect(() => {
+
+    if (isEmpty(top_tracks)=== false ) {  
+
+      setCurrentPlaylist({...top_tracks});
+      setPlaylistTitle("Your Top Tracks");
+      setPlaylistDescription("Your Top Tracks");
+
+      if (isEmpty(top_tracks.items) === false) {
+
+        setPlaylistItems(top_tracks.items);
+
+        if (isEmpty(top_tracks.items[0]) === false) {
+
+          setPlaylistAlbumURL(top_tracks.items[0].album.images[0].url);
+  
+        };
+
+        // track URL
+        // track name
+        // track artists
+        // track album name
+
+console.log("top_tracks", top_tracks)
+      };
+
+    }
+
+
+    if (isEmpty(playlist)=== false) {  
+
+      setCurrentPlaylist({...playlist});
+      setPlaylistDescription("");
+
+      if (isEmpty(playlist.name)=== false) {  
+
+        setPlaylistTitle(playlist.name);
+
+      };
+
+      if (isEmpty(playlist.tracks)=== false && isEmpty(playlist.tracks.items)=== false) {  
+        setPlaylistItems(playlist.tracks.items);
+        console.log("playlistItems", playlistItems);
+      };
+
+      if (isEmpty(playlist.images)=== false && isEmpty(playlist.images[0]) === false && isEmpty(playlist.images[0].url) === false) {  
+
+        setPlaylistAlbumURL(playlist.images[0].url);
+
+      };
+
+    };
+
+    console.log("currentPlaylist", currentPlaylist);
+    console.log("playlist", playlist);
+
+
+
+
+
+  }, [playlist, top_tracks, dispatch]);
+
 
   const playPlaylist = (id) => {
 
@@ -90,7 +162,6 @@ function Body({ spotify }) {
 
   };
 
-  console.log();
 
   return (
     <div className="body">
@@ -99,13 +170,15 @@ function Body({ spotify }) {
 
       <div className="body__info">
 
-        {/* Pulls the first album image in the list*/}
-        {isEmpty(top_tracks) === false && isEmpty(top_tracks.items[0].album.images[0].url) === false ? <img src={top_tracks.items[0].album.images[0].url} alt="Album" /> : null}
+        {/* // * Pulls the first album image in the list*/}
+        {isEmpty(playlistAlbumURL) === false ? <img src={playlistAlbumURL} alt="Album" /> : null}
 
         <div className="body__infoText">
-          <h2>Your Top Tracks</h2>
-          {/* <p>{isEmpty(discover_weekly) === false && isEmpty(discover_weekly.description) === false  ? discover_weekly.description : null}</p> */}
-          <p>Your top tracks from the past year.</p>
+
+        {isEmpty(playlistTitle) === false?  <h2>{playlistTitle}</h2> : null}
+
+        {isEmpty(playlistDescription) === false?  <p>{playlistDescription}</p> : null}
+
         </div>
       </div>
 
@@ -120,13 +193,11 @@ function Body({ spotify }) {
 
         </div>
 
-        {isEmpty(top_tracks) === false && isEmpty(top_tracks.items) === false && isEmpty(top_tracks.items) === false ? 
-
-          top_tracks.items.map((item, index) => (
+        {isEmpty(playlistItems) === false ? 
+              playlistItems.map((item, index) => (
             <SongRow key={index} playSong={playSong} track={item} />
           )) 
-
-        : null}
+        : null} 
 
       </div>
 

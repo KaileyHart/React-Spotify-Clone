@@ -19,4 +19,4 @@ export const isEmpty = (value) => {
     // console.log(componentName, getDateTime(), "isEmpty([\"test\"])", isEmpty(["test"]));
     // console.log(componentName, getDateTime(), "isEmpty({test: \"test\"})", isEmpty({ test: "test" }));
   
-  };
+};
