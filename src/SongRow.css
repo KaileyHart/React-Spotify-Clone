@@ -1,6 +1,6 @@
 .songRow {
-    margin-left: 20px;
-    padding: 20px;
+    /* margin-left: 20px; */
+    /* padding: 20px; */
     display: flex;
     align-items: center;
     color: #fff;
@@ -10,22 +10,64 @@
     cursor: pointer;
     background-color: #000;
     opacity: 0.8;
+    border-radius: 10px;
 }
 .songRow__info {
-    margin-left: 20px;
+    /* margin-left: 20px; */
 }
 
 .songRow__info > h1 {
     font-size: 16px;
 }
 
+
+.songRow__info {
+    display: flex;
+    align-items: center;
+    padding: 0px 16px;
+    width: 95%;
+    height: 56px;
+    margin: 0 auto;
+  
+    .songRow__number {
+      width: 5%;
+    }
+    .songRow__title {
+        display: flex;
+        width: 60%;
+        .songRow__album {
+            /* height: 60px; */
+            width: 40px;
+            border-radius: 10px;
+            margin-right: 12px;
+        }
+        h1 {
+            font-size: 16px;
+
+        }
+        p {
+            font-size: 14px;
+            color: rgb(179, 179, 179);
+        }
+    }
+    .songRow__album {
+      width: 40%;
+      font-size: 14px;
+      
+    }
+    .songRow__date_added {
+      width: 20%;
+      font-size: 14px;
+    }
+    .songRow__duration {
+      width: 20%;
+      font-size: 14px;
+    }
+  }
+
 .songRow__info > p {
     font-size: 14px;
     margin-top: 3px;
-    color: grey;
+    color: rgb(179, 179, 179);
 }
 
-.songRow__album {
-    height: 40px;
-    width: 40px;
-}

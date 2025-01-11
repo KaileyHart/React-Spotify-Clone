@@ -11,8 +11,8 @@ import PauseCircleIcon from "@mui/icons-material/PauseCircleFilledOutlined";
 function Body({ spotify }) {
 
   // * Pulls discover weekly playlist info from data layer -> reducer.js
-  const [{user, playlist, playing, top_tracks }, dispatch] = useDataLayerValue();
-
+  const [{user, playlist, playlists, playing, top_tracks }, dispatch] = useDataLayerValue();
+  console.log("playlists", playlists);
   const [currentPlaylist, setCurrentPlaylist] = useState({});
 
   const [playlistAlbumURL, setPlaylistAlbumURL] = useState("");
@@ -45,16 +45,17 @@ function Body({ spotify }) {
         // track artists
         // track album name
 
-console.log("top_tracks", top_tracks)
       };
 
-    }
+    };
 
 
     if (isEmpty(playlist)=== false) {  
 
       setCurrentPlaylist({...playlist});
       setPlaylistDescription("");
+
+      console.log("playlist", playlist);
 
       if (isEmpty(playlist.name)=== false) {  
 
@@ -74,13 +75,6 @@ console.log("top_tracks", top_tracks)
       };
 
     };
-
-    console.log("currentPlaylist", currentPlaylist);
-    console.log("playlist", playlist);
-
-
-
-
 
   }, [playlist, top_tracks, dispatch]);
 
@@ -175,9 +169,9 @@ console.log("top_tracks", top_tracks)
 
         <div className="body__infoText">
 
-        {isEmpty(playlistTitle) === false?  <h2>{playlistTitle}</h2> : null}
-
-        {isEmpty(playlistDescription) === false?  <p>{playlistDescription}</p> : null}
+        {isEmpty(playlistTitle) === false?  <h1>{playlistTitle}</h1> : null}
+        {isEmpty(playlistItems) === false? <p>{playlistItems.length} Songs</p> : null}
+        {isEmpty(playlistDescription) === false? <p>{playlistDescription}</p> : null}
 
         </div>
       </div>
@@ -193,9 +187,19 @@ console.log("top_tracks", top_tracks)
 
         </div>
 
+        <div className="body__table_info">
+          <p className="body__table_number">#</p>
+          <p className="body__table_title">Title</p>
+          <p className="body__table_album">Album</p>
+          <p className="body__table_date_added">Date Added</p>
+          <p className="body__table_duration">Duration</p>
+        </div>
+        <hr className="body__table_hr"></hr>
+        
+
         {isEmpty(playlistItems) === false ? 
               playlistItems.map((item, index) => (
-            <SongRow key={index} playSong={playSong} track={item} />
+            <SongRow key={index} playSong={playSong} track={item} trackNumber={index} />
           )) 
         : null} 
 

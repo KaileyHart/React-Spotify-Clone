@@ -2,7 +2,6 @@
     display: flex;
     align-items: center;
     color: grey;
-    /* height: 40px; */
     cursor: pointer;
     transition: 150ms color ease-in;
 
@@ -17,6 +16,7 @@
 .sidebarNavOption:hover {
     color: #fff;
     background-color: #1F1F1F;
+    border-radius: 10px;
 }
 
 .sidebarNavOption__icon {

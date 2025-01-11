@@ -1,9 +1,8 @@
 .body {
   flex: 0.8;
   background: linear-gradient(rgb(91, 87, 115), rgba(0, 0, 0, 1));
-  height: 100vh;
   color: #fff;
-  padding: 30px;
+  padding: 30px 30px 0 30px;
   overflow-y: overlay;
 }
 
@@ -16,6 +15,37 @@
   align-items: flex-end;
   padding: 10px;
 }
+
+.body__table_info{
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.body__table_info .body__table_number {
+    width: 5%;
+  }
+
+.body__table_info .body__table_title {
+    width: 40%;
+  }
+
+.body__table_info .body__table_album {
+    width: 40%;
+  }
+
+.body__table_info .body__table_date_added {
+    width: 20%;
+  }
+
+.body__table_info .body__table_duration {
+    width: 20%;
+  }
+
+.body__table_info .body__table_hr {
+    width: 50%;
+    color: rgb(179, 179, 179);
+  }
 
 .body__infoText {
   flex: 1;
@@ -78,6 +108,7 @@
 
 .dashboard__body {
     display: flex;
+    height: 83vh;
 }
 
 .footer {
@@ -241,13 +272,11 @@ code {
 }
 
 .sidebar {
-    height: 100vh;
     flex: 0.2;
     background-color: #040404;
     color: white;
     min-width: 230px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 10px;
     overflow-y: overlay;
 }
 
@@ -280,6 +309,7 @@ code {
     cursor: pointer;
     background-color: #000;
     opacity: 0.8;
+    border-radius: 10px;
 }
 
 .songRow__info {
@@ -297,6 +327,7 @@ code {
 }
 
 .songRow__album {
-    height: 40px;
-    width: 40px;
+    height: 60px;
+    width: 60px;
+    border-radius: 10px;
 }
