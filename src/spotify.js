@@ -1,3 +1,5 @@
+import { isEmpty } from "../utilities";
+
 // * Lets Spotify API take care of authentication
 const authorizationEndpoint = "https://accounts.spotify.com/authorize";
 
@@ -181,10 +183,12 @@ export const getRefreshToken = async () => {
    if (isEmpty(response.refreshToken) === false) {
 
      localStorage.setItem('refresh_token', response.refreshToken);
+     console.log("refresh_token", response.refreshToken);
 
    } else {
 
     logoutClick();
+    console.log("logoutClick()");
 
    };
 
