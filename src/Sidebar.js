@@ -11,6 +11,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
 import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
 
+
 function Sidebar() {
 
   // * Pulls the playlists from the "data layer"
@@ -32,7 +33,6 @@ function Sidebar() {
       <br />
       <strong className="sidebar__title">YOUR PLAYLISTS</strong>
       <hr />
-
       
       {isEmpty(playlists) === false && isEmpty(playlists.items) === false ?
 
@@ -42,8 +42,6 @@ function Sidebar() {
 
         : null}
 
-        
-      
     </div>
   );
 }

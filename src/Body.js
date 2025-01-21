@@ -191,11 +191,12 @@ function Body({ spotify }) {
           <p className="body__table_number">#</p>
           <p className="body__table_title">Title</p>
           <p className="body__table_album">Album</p>
-          <p className="body__table_date_added">Date Added</p>
+          <p className="body__table_date_released">Date Released</p>
           <p className="body__table_duration">Duration</p>
         </div>
+   
         <hr className="body__table_hr"></hr>
-        
+     
 
         {isEmpty(playlistItems) === false ? 
               playlistItems.map((item, index) => (

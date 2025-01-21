@@ -1,6 +1,6 @@
 .body {
   flex: 0.8;
-  background: linear-gradient(rgb(91, 87, 115), rgba(0, 0, 0, 1));
+  background: linear-gradient(rgba(18, 18, 18,.8), rgba(0, 0, 0, 1));
   color: #fff;
   padding: 30px 30px 0 30px;
   overflow-y: overlay;
@@ -23,31 +23,34 @@
 .body__table_info {
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 10px 20px;
   color: rgb(179, 179, 179);
   font-size: 14px;
 
   .body__table_number {
-    width: 5%;
+    width: 3%
   }
   .body__table_title {
-    width: 40%;
+    width: 55%;
   }
   .body__table_album {
-    width: 40%;
+    width: 37%;
   }
-  .body__table_date_added {
-    width: 20%;
+  .body__table_date_released {
+    width: 19%;
   }
   .body__table_duration {
-    width: 20%;
-  }
-
-  .body__table_hr {
-    width: 500px;
+    width: 18%;
   }
 }
 
+.body__table_hr {
+  margin-bottom: 20px;
+  height: 1px;
+  border: none;
+  color: #b3b3b3;
+  background-color: #b3b3b3;
+}
 
 .body__infoText {
   flex: 1;
@@ -58,9 +61,7 @@
   p {
     font-size: 14px;
     color: rgb(179, 179, 179);
-
   }
-
 }
 
 .body__infoText > h2 {
@@ -69,47 +70,47 @@
 }
 
 .body__info > img {
-    height: 20vw;
-    margin: 0 20px;
-    box-shadow: 0 4px 60px rgba(0,0,0,.5);
+  height: 20vw;
+  margin: 0 20px;
+  box-shadow: 0 4px 60px rgba(0,0,0,.5);
 }
 
 .body__songs {
-    margin: 20px -30px;
+  margin: 20px -30px;
+  padding: 16px;
 }
 
 .body__icons {
-    display: flex;
-    align-items: center;
-
+  display: flex;
+  align-items: center;
 }
 
 .body__icons > .MuiSvgIcon-root {
-    margin-right: 20px;
+  margin-right: 20px;
 }
 
 .body__shuffle {
-    font-size: 80px !important;
-    margin-left: 50px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    color: #1ed15e;
+  font-size: 80px !important;
+  margin-left: 50px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  color: #1ed15e;
 }
 
 .body__shuffle:hover {
-    transition: 100ms transform ease-in;
-    transform:scale(1.08);
-    cursor: pointer;
+  transition: 100ms transform ease-in;
+  transform:scale(1.08);
+  cursor: pointer;
 }
 
 .body__favorite {
-    color: #1ed15e;
+  color: #1ed15e;
 }
 
 .body__favorite {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .body__more {
-    color: grey;
+  color: grey;
 }

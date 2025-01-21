@@ -11,6 +11,15 @@
         font-family: SpotifyMixUI, CircularSp-Arab, CircularSp-Hebr, CircularSp-Cyrl, CircularSp-Grek, CircularSp-Deva, "Helvetica Neue", helvetica, arial, "Hiragino Kaku Gothic ProN", Meiryo, "MS Gothic";
     }
 
+    .sidebarNavOption__playOverlay {
+        height: 35px;
+        width: 35px;
+        padding: 18px;
+        object-fit: contain;
+        border-radius: 15px;
+        position: absolute;
+    }
+
 }
 
 .sidebarNavOption:hover {

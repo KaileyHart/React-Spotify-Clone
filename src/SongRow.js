@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import './SongRow.css';
-import { isEmpty } from "../utilities";
+import { isEmpty, convertDate, millisecondsToMinutesAndSeconds } from "../utilities";
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 
 function SongRow({ trackNumber, track }) {
 
@@ -12,34 +13,41 @@ function SongRow({ trackNumber, track }) {
   let trackReleaseDate = "";
   let trackDuration = "";
 
+  const [isHovering, setIsHovering] = useState(false);
+
   if (isEmpty(track)=== false && isEmpty(track.track) === false) {
-    console.log(track.track, "track.track");
+    
+    // console.log(track.track, "track.track");
 
     trackName = track.track.name;
     trackImage = track.track.album.images[0].url;
     trackArtists = track.track.artists;
     trackAlbumName = track.track.album.name;
-    trackReleaseDate = track.track.album.release_date;
-    trackDuration = track.track.duration_ms;
+    trackReleaseDate = convertDate(track.track.album.release_date);
+    trackDuration = millisecondsToMinutesAndSeconds(track.track.duration_ms);
 
   } else {
 
-    console.log(track, "track");
+    // console.log(track, "track");
 
     trackName = track.name;
     trackImage = track.album.images[0].url;
     trackArtists = track.artists;
     trackAlbumName = track.album.name;
-    trackReleaseDate = track.album.release_date;
-    trackDuration = track.duration_ms;
+    trackReleaseDate = convertDate(track.album.release_date);
+    trackDuration = millisecondsToMinutesAndSeconds(track.duration_ms);
 
   };
 
   return (
-    <div className="songRow">
+    <div className="songRow" onMouseOver={(event) => {setIsHovering(true)}} onMouseOut={(event) => {setIsHovering(false)}} >
       
       <div className="songRow__info">
-        <p className="songRow__number"> {trackNumber} </p>
+
+        <div className="songRow__number">
+          {isHovering === true ?  <PlayArrowRoundedIcon /> : trackNumber }
+        </div>
+
         <div className="songRow__title">
           <img className="songRow__album" src={trackImage} alt="Album Cover"/>
           <div>
