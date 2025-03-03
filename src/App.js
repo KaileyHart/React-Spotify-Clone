@@ -29,7 +29,7 @@ function App() {
     return timeInMilliseconds;
 
   };
- 
+
   useEffect(() => {
 
     if (isEmpty(access_token) === false) {
@@ -38,20 +38,18 @@ function App() {
 
       let time = checkAccessTokenExpiration(expires);
 
-      console.log("time", time < 0);
+      // console.log("time", time < 0);
 
       if (time < 0) {
 
-        // refreshToken();
         getRefreshToken();
 
       };
-     
+
       dispatch({
         type: "SET_TOKEN",
         token: access_token,
       });
-
 
       // * gets the user acct
       spotify.getMe().then((user) => {
@@ -89,6 +87,38 @@ function App() {
         top_tracks: response,
       }));
 
+      // TODO: This only works if you have the app on a different device open and playing already
+      // * get a user's available devices
+      spotify.getMyDevices()
+        .then((data) => {
+          // let availableDevices = data.body.devices;
+          console.log("data", data.devices);
+          // console.log("availableDevices", availableDevices);
+        }, (error) => {
+          console.log('Something went wrong!', error);
+        });
+
+      // * get information about user's current playback state
+      spotify.getMyCurrentPlaybackState()
+        .then((data) => {
+
+          console.log("Current playback state data", data);
+
+          if (isEmpty(data) === false && isEmpty(data.is_playing) === false) {
+
+            console.log("User is currently playing something!");
+
+          } else {
+
+            console.log("User is not playing anything, or doing so in private.");
+          };
+
+        }, (error) => {
+
+          console.log('Something went wrong!', error);
+
+        });
+
       // * gets spotify 
       dispatch({
         type: 'SET_SPOTIFY',
@@ -102,7 +132,7 @@ function App() {
 
   return (
     <div className="app">
-      {access_token ? <Dashboard spotify={spotify}  /> : <Login redirectToSpotifyAuthorize={redirectToSpotifyAuthorize}/>}
+      {access_token ? <Dashboard spotify={spotify} /> : <Login redirectToSpotifyAuthorize={redirectToSpotifyAuthorize} />}
     </div>
   );
 }

@@ -8,86 +8,81 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 const spotify = new SpotifyWebApi();
 
 function SidebarNavOption({ option, Icon, image, playlistID }) {
-  
-  const [{ token }, dispatch] = useDataLayerValue();
 
-  const [currentPlaylistID, setCurrentPlaylistID] = useState("");
+    const [{ token }, dispatch] = useDataLayerValue();
 
-  const [isHovering, setIsHovering] = useState(false);
+    const [currentPlaylistID, setCurrentPlaylistID] = useState("");
 
-  let access_token = localStorage.getItem("access_token");
+    const [isHovering, setIsHovering] = useState(false);
 
-  useEffect(() => {
-    if (isEmpty(access_token) === false) {
-      spotify.setAccessToken(access_token);
+    let access_token = localStorage.getItem("access_token");
 
-      dispatch({
-        type: "SET_TOKEN",
-        token: access_token,
-      });
+    useEffect(() => {
 
-      // * gets spotify
-      dispatch({
-        type: "SET_SPOTIFY",
-        spotify: spotify,
-      });
-    }
+        if (isEmpty(access_token) === false) {
 
-    if (isEmpty(currentPlaylistID) === false) {
-      spotify.getPlaylist(playlistID).then((response) => {
-        console.log("response", response);
+            spotify.setAccessToken(access_token);
 
-        dispatch({
-          type: "SET_PLAYLIST",
-          playlist: response,
-        });
-      });
-    }
-  }, [token, currentPlaylistID, dispatch]);
+            dispatch({
+                type: "SET_TOKEN",
+                token: access_token,
+            });
 
-  {
-    /* // TODO: Add a link around each playlist to show the playlist items in the body page */
-  }
+            // * gets spotify
+            dispatch({
+                type: "SET_SPOTIFY",
+                spotify: spotify,
+            });
 
-  console.log("isHovering", isHovering)
+        }
 
-  return (
-    <a onClick={() => setCurrentPlaylistID(playlistID)} onMouseOver={(event) => { setIsHovering(true);}} onMouseOut={(event) => {setIsHovering(false);}}>
-      <div className="sidebarNavOption">
-        {isEmpty(Icon) === false && <Icon className="sidebarNavOption__icon" />}
+        if (isEmpty(currentPlaylistID) === false) {
+
+            spotify.getPlaylist(playlistID).then((response) => {
+
+                dispatch({
+                    type: "SET_PLAYLIST",
+                    playlist: response,
+                });
+
+            });
+
+        };
+
+    }, [token, currentPlaylistID, dispatch]);
 
 
-          {/* {isHovering === false && image ? (
-              <div className="sidebarNavOption__albumCover_container">
-                
-                <img src={image} className="sidebarNavOption__albumCover"/>
-              </div>
-          ) : (
-            <img src={image} className="sidebarNavOption__albumCover" />
-          )} */}
+    return (
+        <a onClick={() => setCurrentPlaylistID(playlistID)} onMouseOver={(event) => { setIsHovering(true); }} onMouseOut={(event) => { setIsHovering(false); }}>
 
-          {/* {isEmpty(image) === false ? (
-            <PlayArrowRoundedIcon className="songRow__number" />
-          ) : null} */}
+            <div className="sidebarNavOption">
 
-          {isEmpty(image) === false ? (
-            <div> 
-              {isHovering === false ?
-                <img src={image} className="sidebarNavOption__albumCover" />
-                : 
-                <div> 
-                  <PlayArrowRoundedIcon className="sidebarNavOption__playOverlay" />
-                  <img src={image} className="sidebarNavOption__albumCover" />
-                </div>
-              }
+                {isEmpty(Icon) === false && <Icon className="sidebarNavOption__icon" />}
+
+                {isEmpty(image) === false ? (
+
+                    <div>
+
+                        {isHovering === false ?
+                            <img src={image} className="sidebarNavOption__albumCover" />
+                            :
+                            <div>
+                                <PlayArrowRoundedIcon className="sidebarNavOption__playOverlay" />
+                                <img src={image} className="sidebarNavOption__albumCover" />
+                            </div>
+                        }
+
+                    </div>
+
+                ) : null}
+
+                {Icon ? <h4>{option}</h4> : <p>{option}</p>}
+
             </div>
 
-          ) : null}
-    
-        {Icon ? <h4>{option}</h4> : <p>{option}</p>}
-      </div>
-    </a>
-  );
+        </a>
+
+    );
 }
 
 export default SidebarNavOption;

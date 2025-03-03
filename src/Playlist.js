@@ -8,38 +8,42 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import PauseCircleIcon from "@mui/icons-material/PauseCircleFilledOutlined";
 
-function Playlist({ spotify, playlist}) {
+// ! This isn't being used. 
+
+function Playlist({ spotify, playlist }) {
 
   // * Pulls discover weekly playlist info from data layer -> reducer.js
-  const [{user, playing, top_tracks,  }, dispatch] = useDataLayerValue();
+  const [{ playing, top_tracks, playback_state }, dispatch] = useDataLayerValue();
+  // console.log("playback_state",playback_state)
 
-  const playPlaylist = (id) => {
+  // const playPlaylist = (id) => {
 
-    spotify
-      .play({
-        context_uri: `spotify:playlist:37i9dQZEVXcRhI3EF1Nhfw`,
-      })
-      .then((res) => {
-        
-        spotify.getMyCurrentPlayingTrack().then((r) => {
+  //   spotify
+  //     .play({
+  //       context_uri: `spotify:playlist:37i9dQZEVXcRhI3EF1Nhfw`,
+  //     })
+  //     .then((res) => {
 
-          dispatch({
-            type: "SET_ITEM",
-            item: r.item,
-          });
+  //       spotify.getMyCurrentPlayingTrack().then((r) => {
 
-          dispatch({
-            type: "SET_PLAYING",
-            playing: true,
-          });
+  //         dispatch({
+  //           type: "SET_ITEM",
+  //           item: r.item,
+  //         });
 
-        });
+  //         dispatch({
+  //           type: "SET_PLAYING",
+  //           playing: true,
+  //         });
 
-      });
-  };
+  //       });
+
+  //     });
+  // };
 
   // * Play and Pause Toggles
   const handlePlayPause = () => {
+    // console.log("playback_state",playback_state)
 
     if (playing) {
 
@@ -72,25 +76,26 @@ function Playlist({ spotify, playlist}) {
       })
       .then((res) => {
 
-        spotify.getMyCurrentPlayingTrack().then((r) => {
+        // spotify.getMyCurrentPlayingTrack().then((r) => {
 
-          dispatch({
-            type: "SET_ITEM",
-            item: r.item,
-          });
+        //   dispatch({
+        //     type: "SET_ITEM",
+        //     item: r.item,
+        //   });
 
-          dispatch({
-            type: "SET_PLAYING",
-            playing: true,
-          });
+        //   // console.log("item", item)
 
-        });
+        //   dispatch({
+        //     type: "SET_PLAYING",
+        //     playing: true,
+        //   });
+
+        // });
 
       });
 
   };
 
-  console.log();
 
   return (
     <div className="body">
@@ -113,20 +118,20 @@ function Playlist({ spotify, playlist}) {
 
         <div className="body__icons">
 
-          {playing === true ? ( <PauseCircleIcon onClick={handlePlayPause} fontSize="large" className="body__shuffle"/>) : ( <PlayCircleIcon onClick={playPlaylist} fontSize="large" className="body__shuffle"/>)}
+          {playing === true ? (<PauseCircleIcon onClick={handlePlayPause} fontSize="large" className="body__shuffle" />) : (<PlayCircleIcon onClick={playPlaylist} fontSize="large" className="body__shuffle" />)}
 
           <FavoriteIcon fontSize="large" className="body__favorite" />
           <MoreHorizIcon className="body__more" />
 
         </div>
 
-        {isEmpty(top_tracks) === false && isEmpty(top_tracks.items) === false && isEmpty(top_tracks.items) === false ? 
+        {isEmpty(top_tracks) === false && isEmpty(top_tracks.items) === false && isEmpty(top_tracks.items) === false ?
 
           top_tracks.items.map((item, index) => (
             <SongRow key={index} playSong={playSong} track={item} />
-          )) 
+          ))
 
-        : null}
+          : null}
 
       </div>
 

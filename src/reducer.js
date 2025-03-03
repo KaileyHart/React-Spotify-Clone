@@ -1,4 +1,4 @@
-import {findAllByDisplayValue} from "@testing-library/react";
+
 
 export const initialState = {
     user: null,
@@ -10,12 +10,13 @@ export const initialState = {
     discover_weekly: null,
     top_artists: null,
     top_tracks: null,
+    playback_state: null,
 };
 
 // * Updating the state w/o overriding your old state
 const reducer = (state, action) => {
-    
-    switch(action.type) {
+
+    switch (action.type) {
         case 'SET_USER':
             return {
                 ...state,
@@ -26,22 +27,22 @@ const reducer = (state, action) => {
                 ...state,
                 playing: action.playing,
             }
-        case 'SET_ITEM': 
+        case 'SET_ITEM':
             return {
                 ...state,
                 item: action.item,
             }
-        case 'SET_TOP_ARTISTS': 
+        case 'SET_TOP_ARTISTS':
             return {
                 ...state,
                 top_artists: action.top_artists,
             }
-        case 'SET_TOP_TRACKS': 
+        case 'SET_TOP_TRACKS':
             return {
                 ...state,
                 top_tracks: action.top_tracks,
             }
-        case 'SET_TOKEN': 
+        case 'SET_TOKEN':
             return {
                 ...state,
                 token: action.token
@@ -60,13 +61,18 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 spotify: action.spotify,
-            } 
+            }
         case 'SET_PLAYLIST':
             return {
                 ...state,
                 playlist: action.playlist,
-            } 
-        default: 
+            }
+        case 'SET_PLAYBACK_STATE':
+            return {
+                ...state,
+                playback_state: action.playback_state,
+            }
+        default:
             return state;
     }
 }

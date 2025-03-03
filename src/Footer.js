@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Grid, Slider } from "@mui/material";
 import { useDataLayerValue } from "./DataLayer";
 import { isEmpty } from "../utilities";
@@ -15,181 +15,124 @@ import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 
 function Footer({ spotify }) {
 
-  // * Pull song data from spotify
-  const [{ token, item, playing }, dispatch] = useDataLayerValue();
-  const [albumCover, setAlbumCover] = useState("");
-  const [albumName, setAlbumName] = useState("");
+    // * Pull song data from spotify
+    const [{ item, playing }, dispatch] = useDataLayerValue();
 
+    // const [albumCover, setAlbumCover] = useState("");
+    // const [albumName, setAlbumName] = useState("");
 
-  // TODO: item is null
-  useEffect(() => {
+    // const [currentPlaybackState, setCurrentPlaybackState] = useState({});
 
-    if (isEmpty(item) === false) {
+    const handlePlayPause = () => {
 
-      if (isEmpty(item.album) === false && isEmpty(item.album.images[0]) === false && isEmpty(item.album.images[0].url) === false) {
+        if (playing === true) {
 
-        setAlbumCover(item.album.images[0].url);
+            spotify.pause();
 
-      } 
+            dispatch({
+                type: "SET_PLAYING",
+                playing: false,
+            });
 
-      if (isEmpty(item.name) === false) {
+        } else {
 
-        setAlbumName(item.name);
+            spotify.play();
 
-      };
+            dispatch({
+                type: "SET_PLAYING",
+                playing: true,
+            });
 
-    };
-
-  }, [item]);
-
-
-  useEffect(() => {
-    spotify.getMyCurrentPlaybackState().then((response) => {
-
-      dispatch({
-        type: "SET_PLAYING",
-        playing: response.is_playing,
-      });
-
-      dispatch({
-        type: "SET_ITEM",
-        item: response.item,
-      });
-
-    });
-
-  }, [spotify]);
-
-
-  const handlePlayPause = () => {
-
-    if (playing === true) {
-
-      spotify.pause();
-
-      dispatch({
-        type: "SET_PLAYING",
-        playing: false,
-      });
-
-    } else {
-
-      spotify.play();
-
-      dispatch({
-        type: "SET_PLAYING",
-        playing: true,
-      });
+        };
 
     };
 
-  };
+
+    // TODO: The footer current playing track is one behind. 
+    // const updatePreview = (currentPlaybackState) => {
+
+    //   if (isEmpty(currentPlaybackState) === false) {
+
+    //     console.log("currentPlaybackState", currentPlaybackState)
+
+    //     if (isEmpty(currentPlaybackState.album) === false && isEmpty(currentPlaybackState.album.images[0]) === false && isEmpty(currentPlaybackState.album.images[0].url) === false) {
+
+    //       setAlbumCover(currentPlaybackState.album.images[0].url);
+
+    //     };
+
+    //     if (isEmpty(currentPlaybackState.name) === false) {
+
+    //       setAlbumName(currentPlaybackState.name);
+
+    //     };
+
+    //   };
+
+    // };
 
 
-  const skipNext = () => {
+    return (
+        <div className="footer">
 
-    spotify.skipToNext();
+            <div className="footer__left">
 
-    spotify.getMyCurrentPlayingTrack().then((response) => {
+                {isEmpty(item) === false && isEmpty(item.name) === false && isEmpty(item.album) === false && isEmpty(item.album.images[0]) === false && isEmpty(item.album.images[0].url) === false ? <img className="footer__albumCover" src={item.album.images[0].url} alt={item.name} /> : null}
 
-      dispatch({
-        type: "SET_ITEM",
-        item: response.item,
-      });
+                {isEmpty(item) === false ?
 
-      dispatch({
-        type: "SET_PLAYING",
-        playing: true,
-      });
+                    (<div className="footer__songInfo">
+                        <h4>{item.name}</h4>
+                        <p>{item.artists.map((artist) => artist.name).join(", ")}</p>
+                    </div>)
 
-    });
+                    :
+                    (<div className="footer__songInfo">
+                        <h4>No song is playing</h4>
+                        <p>...</p>
+                    </div>)}
 
-  };
+            </div>
 
+            <div className="footer__center">
 
-  const skipPrevious = () => {
+                <ShuffleIcon className="footer__green" />
 
-    spotify.skipToPrevious();
+                <SkipPreviousIcon className="footer__icon" onClick={() => { isEmpty(item) === false ? spotify.skipToPrevious(item) : null }} />
 
-    spotify.getMyCurrentPlayingTrack().then((response) => {
+                {isEmpty(playing) === false && playing === true ?
+                    (<PauseCircleOutlineIcon onClick={handlePlayPause} fontSize="large" className="footer__icon" />)
+                    :
+                    (<PlayCircleOutlineIcon onClick={handlePlayPause} fontSize="large" className="footer__icon" />)}
 
-      dispatch({
-        type: "SET_ITEM",
-        item: response.item,
-      });
+                <SkipNextIcon className="footer__icon" onClick={() => spotify.skipToNext()} />
 
-      dispatch({
-        type: "SET_PLAYING",
-        playing: true,
-      });
+                <RepeatIcon className="footer__green" />
 
-    });
+            </div>
 
-  };
+            <div className="footer__right">
 
+                <Grid container spacing={2}>
 
-  return (
-    <div className="footer">
+                    <Grid item>
+                        <PlaylistPlayIcon />
+                    </Grid>
 
-      <div className="footer__left">
+                    <Grid item>
+                        <VolumeDownIcon />
+                    </Grid>
 
-        {/* // TODO: item is null */}
-        {/* <img className="footer__albumCover" src={albumCover} alt={albumName} /> */}
+                    <Grid item xs>
+                        <Slider aria-labelledby="continuous-slider" />
+                    </Grid>
 
-         {isEmpty(item) === false ? 
+                </Grid>
 
-          (<div className="footer__songInfo">
-              <h4>{item.name}</h4>
-              <p>{item.artists.map((artist) => artist.name).join(", ")}</p>
-            </div>)
+            </div>
 
-          :
-          (<div className="footer__songInfo">
-              <h4>No song is playing</h4>
-              <p>...</p>
-            </div>)}
-
-      </div>
-
-      <div className="footer__center">
-
-        <ShuffleIcon className="footer__green" />
-
-        <SkipPreviousIcon className="footer__icon" onClick={skipNext}/>
-
-        {playing === true ? 
-          (<PauseCircleOutlineIcon onClick={handlePlayPause} fontSize="large" className="footer__icon"/>) 
-          : 
-          (<PlayCircleOutlineIcon onClick={handlePlayPause} fontSize="large" className="footer__icon"/>)}
-
-        <SkipNextIcon className="footer__icon" onClick={skipPrevious}/>
-
-        <RepeatIcon className="footer__green" />
-
-      </div>
-
-      <div className="footer__right">
-
-        <Grid container spacing={2}>
-
-          <Grid item>
-            <PlaylistPlayIcon />
-          </Grid>
-
-          <Grid item>
-            <VolumeDownIcon />
-          </Grid>
-
-          <Grid item xs>
-            <Slider aria-labelledby="continuous-slider" />
-          </Grid>
-
-        </Grid>
-
-      </div>
-
-    </div>
-  );
+        </div>
+    );
 }
 
 export default Footer;
