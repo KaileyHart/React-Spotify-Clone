@@ -39,8 +39,9 @@ function SongRow({ trackNumber, track, playSong }) {
 
     };
 
+
     return (
-        <div className="songRow" onMouseOver={(event) => { setIsHovering(true) }} onMouseOut={(event) => { setIsHovering(false) }} onClick={() => playSong(track.id)}>
+        <div className="songRow" onMouseOver={(event) => { setIsHovering(true) }} onMouseOut={(event) => { setIsHovering(false) }} onClick={() => playSong(track)}>
 
             <div className="songRow__info">
 

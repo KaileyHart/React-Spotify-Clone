@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Grid, Slider } from "@mui/material";
 import { useDataLayerValue } from "./DataLayer";
 import { isEmpty } from "../utilities";
@@ -16,60 +16,55 @@ import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 function Footer({ spotify }) {
 
     // * Pull song data from spotify
-    const [{ item, playing }, dispatch] = useDataLayerValue();
-
-    // const [albumCover, setAlbumCover] = useState("");
-    // const [albumName, setAlbumName] = useState("");
-
-    // const [currentPlaybackState, setCurrentPlaybackState] = useState({});
+    const [{ item, playing, playback_state, currently_playing }, dispatch] = useDataLayerValue();
 
     const handlePlayPause = () => {
 
         if (playing === true) {
 
-            spotify.pause();
-
-            dispatch({
-                type: "SET_PLAYING",
-                playing: false,
+            spotify.pause().then(() => {
+                dispatch({
+                    type: "SET_PLAYING",
+                    playing: false,
+                });
             });
 
         } else {
 
-            spotify.play();
-
-            dispatch({
+            spotify.play().then(() => dispatch({
                 type: "SET_PLAYING",
                 playing: true,
-            });
+            }));
 
         };
 
     };
 
 
-    // TODO: The footer current playing track is one behind. 
-    // const updatePreview = (currentPlaybackState) => {
+    const skipToNextSong = () => {
 
-    //   if (isEmpty(currentPlaybackState) === false) {
+        if (isEmpty(playback_state) === false && isEmpty(playback_state.device) === false && isEmpty(playback_state.device.id) === false) {
+            // console.log("playback_state.device.id", playback_state.device.id)
+            let deviceID = playback_state.device.id;
+            // console.log("deviceID", deviceID)
+            spotify.skipToNext({ "device_id": deviceID });
+        };
 
-    //     console.log("currentPlaybackState", currentPlaybackState)
+    };
 
-    //     if (isEmpty(currentPlaybackState.album) === false && isEmpty(currentPlaybackState.album.images[0]) === false && isEmpty(currentPlaybackState.album.images[0].url) === false) {
+    const displayCurrentlyPlaying = () => {
 
-    //       setAlbumCover(currentPlaybackState.album.images[0].url);
+        spotify.getMyCurrentPlayingTrack().then((response) => {
+            console.log("playing", response)
+        });
 
-    //     };
+    }
 
-    //     if (isEmpty(currentPlaybackState.name) === false) {
+    useEffect(() => {
 
-    //       setAlbumName(currentPlaybackState.name);
+        console.log("currently_playing", currently_playing)
 
-    //     };
-
-    //   };
-
-    // };
+    }, [currently_playing, dispatch]);
 
 
     return (
@@ -105,7 +100,7 @@ function Footer({ spotify }) {
                     :
                     (<PlayCircleOutlineIcon onClick={handlePlayPause} fontSize="large" className="footer__icon" />)}
 
-                <SkipNextIcon className="footer__icon" onClick={() => spotify.skipToNext()} />
+                <SkipNextIcon className="footer__icon" onClick={() => skipToNextSong()} />
 
                 <RepeatIcon className="footer__green" />
 

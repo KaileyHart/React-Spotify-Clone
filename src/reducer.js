@@ -6,11 +6,12 @@ export const initialState = {
     playlist: null,
     spotify: null,
     playing: false,
-    item: null,
+    item: {},
     discover_weekly: null,
     top_artists: null,
     top_tracks: null,
-    playback_state: null,
+    playback_state: {},
+    currently_playing: {}
 };
 
 // * Updating the state w/o overriding your old state
@@ -71,6 +72,11 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 playback_state: action.playback_state,
+            }
+        case 'SET_CURRENTLY_PLAYING':
+            return {
+                ...state,
+                currently_playing: action.currently_playing,
             }
         default:
             return state;

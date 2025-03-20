@@ -72,30 +72,132 @@ function Body({ spotify }) {
 
     };
 
-  }, [playlist, top_tracks, dispatch]);
+  }, [playlist, top_tracks]);
+
+  // useEffect(() => {
+
+  //   console.log("playing", playing);
+
+  //   if (playing === true) {
+
+  //     spotify.getMyCurrentPlayingTrack().then((response) => {
+  //       console.log("plau 2", response)
+  //       dispatch({
+  //         type: 'SET_CURRENTLY_PLAYING',
+  //         currently_playing: response,
+  //       })
+
+  //       dispatch({
+  //         type: 'SET_ITEM',
+  //         item: response.item,
+  //       })
+
+
+
+  //     })
+  //   }
+
+  // }, [playing])
 
 
   const playPlaylist = (playing, id) => {
 
     if (isEmpty(playing) === false && playing === true) {
+      console.log("pause")
+      spotify.pause()
+        .then(() => {
 
-      spotify.pause();
+          dispatch({
+            type: "SET_PLAYING",
+            playing: false,
+          });
 
-      dispatch({
-        type: "SET_PLAYING",
-        playing: false,
-      });
+          // spotify.getMyCurrentPlayingTrack()
+          //   .then((response) => {
+
+          // dispatch({
+          //   type: 'SET_CURRENTLY_PLAYING',
+          //   currently_playing: response,
+          // })
+
+          // dispatch({
+          //   type: 'SET_ITEM',
+          //   item: response.item,
+          // })
+
+          // dispatch({
+          //   type: "SET_PLAYING",
+          //   playing: false,
+          // });
+
+          // })
+
+        });
 
     } else {
+      console.log("plau")
+
+      // spotify.getMyCurrentPlayingTrack().then((response) => {
+      //   console.log("plau 2", response)
+      //   dispatch({
+      //     type: 'SET_CURRENTLY_PLAYING',
+      //     currently_playing: response,
+      //   })
+
+      //   dispatch({
+      //     type: 'SET_ITEM',
+      //     item: response.item,
+      //   })
+
+      //   dispatch({
+      //     type: "SET_PLAYING",
+      //     playing: true,
+      //   });
+
+      // })
+
 
       spotify.play({ context_uri: `spotify:playlist:${id}` })
         .then(() => {
 
           spotify.getMyCurrentPlayingTrack().then((response) => {
+            console.log("plau 2", response)
+            dispatch({
+              type: 'SET_CURRENTLY_PLAYING',
+              currently_playing: response,
+            })
+
+            dispatch({
+              type: 'SET_ITEM',
+              item: response.item,
+            })
+            dispatch({
+              type: "SET_PLAYING",
+              playing: true,
+            });
+
+
+          })
+
+        });
+
+    };
+
+  };
+
+
+  const playSong = (track) => {
+
+    if (isEmpty(track) === false) {
+
+      if (isEmpty(track.id) === false) {
+
+        spotify.play({ uris: [`spotify:track:${track.id}`] })
+          .then(() => {
 
             dispatch({
               type: "SET_ITEM",
-              item: response.item,
+              item: track,
             });
 
             dispatch({
@@ -105,38 +207,29 @@ function Body({ spotify }) {
 
           });
 
-        });
+      } else if (isEmpty(track.track) === false && isEmpty(track.track.id) === false) {
 
-    };
+        spotify.play({ uris: [`spotify:track:${track.track.id}`] })
+          .then(() => {
 
-  };
-
-
-  const playSong = (id) => {
-
-    if (isEmpty(id) === false) {
-
-      spotify.play({ uris: [`spotify:track:${id}`] })
-        .then(() => {
-
-          spotify.getMyCurrentPlayingTrack()
-            .then((response) => {
-              dispatch({
-                type: "SET_ITEM",
-                item: response.item,
-              });
-
-              dispatch({
-                type: "SET_PLAYING",
-                playing: true,
-              });
-
+            dispatch({
+              type: "SET_ITEM",
+              item: track.track,
             });
-        });
+
+            dispatch({
+              type: "SET_PLAYING",
+              playing: true,
+            });
+
+          });
+
+      };
 
     };
 
   };
+
 
   return (
     <div className="body">
@@ -193,7 +286,7 @@ function Body({ spotify }) {
 
         {isEmpty(playlistItems) === false
           ? playlistItems.map((item, index) => (
-            <SongRow key={index} playSong={() => playSong(item.id)} track={item} trackNumber={index}
+            <SongRow key={index} playSong={() => playSong(item)} isPlaying={playing} track={item} trackNumber={index}
             />
           ))
           : null}

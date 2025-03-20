@@ -45,7 +45,7 @@ function Playlist({ spotify, playlist }) {
   const handlePlayPause = () => {
     // console.log("playback_state",playback_state)
 
-    if (playing) {
+    if (playing === trye) {
 
       spotify.pause();
 
