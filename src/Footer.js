@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Grid, Slider } from "@mui/material";
 import { useDataLayerValue } from "./DataLayer";
 import { isEmpty } from "../utilities";
@@ -17,7 +17,8 @@ import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 function Footer({ spotify }) {
 
     // * Pull song data from spotify
-    const [{ item, playing, playback_state, currently_playing, playlist: currentPlaylist }, dispatch] = useDataLayerValue();
+    const [{ item, playing, playlist: currentPlaylist }, dispatch] = useDataLayerValue();
+
 
     const handlePlayPause = async () => {
 
@@ -97,14 +98,14 @@ function Footer({ spotify }) {
 
 
     const skipToNextSong = async () => {
-        console.log('skipToNextSong');
+        // console.log('skipToNextSong');
 
         // * Get fresh playback state first
         const currentState = await safeSpotifyAPI.getCurrentPlaybackState();
-        console.log('currentState', currentState);
-        const freshPlaybackState = currentState.data;
-        console.log('freshPlaybackState');
-        //* Check if we have context (playlist/album)
+
+        const freshPlaybackState = currentState.data;;
+
+        //* Check if there is a valid context (playlist/album)
         const hasValidContext = freshPlaybackState.context &&
             (freshPlaybackState.context.type === 'playlist' ||
                 freshPlaybackState.context.type === 'album' ||
@@ -114,34 +115,33 @@ function Footer({ spotify }) {
 
         const hasPlaylistInState = currentPlaylist && (currentPlaylist.uri || currentPlaylist.id);
 
-        console.log('hasPlaylistInState');
         let contextSource = [];
 
         if (isEmpty(hasValidContext) === false) {
-            console.log('hasValidContext');
+
             contextSource.push(`Spotify: ${freshPlaybackState.context?.type}`);
 
         };
 
-        if (hasPlaylistInState) {
-            console.log('hasPlaylistInState');
-            contextSource.push(`Body.js: ${currentPlaylist?.name || 'playlist'}`);
+        if (isEmpty(hasPlaylistInState) === false) {
+
+            contextSource.push(`Body.js: ${currentPlaylist?.name || 'playlist'}`)
         };
 
         let deviceID = freshPlaybackState.device.id;
+
         let result = await safeSpotifyAPI.skipToNext();
-        console.log('result');
-        // TODO: Review
+
+        // TODO: Review if this is necessary
         if (result.success === false) {
-            console.log('result.success');
+
             // * If that fails, try with device_id
-            // console.log("Attempting skip with device_id...");
             result = await safeSpotifyAPI.skipToNext(deviceID);
 
         };
 
         if (result.success === true) {
-            console.log('result.success');
+
             // * This keeps the song/album cover in sync
             // * Wait a moment, then check if the song actually changed
             setTimeout(async () => {
@@ -151,7 +151,7 @@ function Footer({ spotify }) {
             }, 1200);
 
         } else {
-            console.log('result.error');
+            // console.log('result.error');
             alert('Unable to skip to next song: ' + result.error);
 
         };
@@ -166,30 +166,19 @@ function Footer({ spotify }) {
 
         const freshPlaybackState = currentState.data;
 
-        // // * Check if we have context (playlist/album)
-        // const hasValidContext = freshPlaybackState.context &&
-        //     (freshPlaybackState.context.type === 'playlist' ||
-        //         freshPlaybackState.context.type === 'album' ||
-        //         freshPlaybackState.context.type === 'artist' ||
-        //         freshPlaybackState.context.type === 'show' ||
-        //         freshPlaybackState.context.uri);
-
-        // // * Also check if we have playlist info in our app state
-        // const hasPlaylistInState = currentPlaylist && currentPlaylist.uri;
-
         let deviceID = freshPlaybackState.device.id;
 
         // * Try using the safe API without device_id first
         let result = await safeSpotifyAPI.skipToPrevious();
 
-        if (!result.success) {
+        if (result.success === false) {
 
             // * If that fails, try with device_id
             result = await safeSpotifyAPI.skipToPrevious(deviceID);
 
         };
 
-        if (result.success) {
+        if (result.success === true) {
 
             // * Wait a moment, then check if the song actually changed
             setTimeout(async () => {

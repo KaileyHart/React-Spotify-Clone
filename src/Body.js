@@ -34,9 +34,12 @@ function Body({ spotify }) {
         setPlaylistItems(top_tracks.items);
 
         if (isEmpty(top_tracks.items[0]) === false && isEmpty(top_tracks.items[0].album) === false && isEmpty(top_tracks.items[0].album.images) === false && isEmpty(top_tracks.items[0].album.images[0]) === false) {
+
           setPlaylistAlbumURL(top_tracks.items[0].album.images[0].url);
-        }
-      }
+
+        };
+
+      };
 
       // * Create a playlist-like context for top tracks. Generates a unique URI for top tracks context.
       const topTracksPlaylistContext = {
@@ -63,6 +66,7 @@ function Body({ spotify }) {
         type: "SET_PLAYLIST",
         playlist: topTracksPlaylistContext,
       });
+
     };
 
     if (isEmpty(playlist) === false) {
@@ -137,9 +141,9 @@ function Body({ spotify }) {
 
           })
           .catch((error) => {
-            // console.log("Error playing full playlist:", error);
+
             // * Fallback to track collection if playlist URI fails
-            if (!isEmpty(playlistItems)) {
+            if (isEmpty(playlistItems) === false) {
 
               playTrackCollection();
 

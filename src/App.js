@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import SpotifyWebApi from "spotify-web-api-js";
 import { redirectToSpotifyAuthorize, getRefreshToken } from "./spotify";
 import { isEmpty } from "../utilities";
@@ -98,12 +98,6 @@ function App() {
           console.log('Something went wrong!', error);
         });
 
-      // spotify.getMyCurrentPlayingTrack().then((response) => {
-      //   dispatch({
-      //     type: 'SET_CURRENTLY_PLAYING',
-      //     currently_playing: response,
-      //   })
-      // })
 
       // * get information about user's current playback state
       spotify.getMyCurrentPlaybackState()
