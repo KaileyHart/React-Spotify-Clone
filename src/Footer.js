@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Grid, Slider } from "@mui/material";
 import { useDataLayerValue } from "./DataLayer";
 import { isEmpty } from "../utilities";
+import { safeSpotifyAPI } from "./SafeSpotifyAPI";
 
 // * Icons
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleFilledOutlined";
@@ -16,55 +17,226 @@ import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 function Footer({ spotify }) {
 
     // * Pull song data from spotify
-    const [{ item, playing, playback_state, currently_playing }, dispatch] = useDataLayerValue();
+    const [{ item, playing, playback_state, currently_playing, playlist: currentPlaylist }, dispatch] = useDataLayerValue();
 
-    const handlePlayPause = () => {
+    const handlePlayPause = async () => {
 
         if (playing === true) {
 
-            spotify.pause().then(() => {
+            const result = await safeSpotifyAPI.pause();
+
+            if (result.success === true) {
+
                 dispatch({
                     type: "SET_PLAYING",
                     playing: false,
                 });
+
+            } else {
+
+                // console.log('Error pausing:', result.error);
+                alert('Unable to pause: ' + result.error);
+
+            };
+
+        } else {
+
+            const result = await safeSpotifyAPI.play();
+
+            if (result.success === true) {
+
+                dispatch({
+                    type: "SET_PLAYING",
+                    playing: true,
+                });
+
+            } else {
+
+                // console.log('Error playing:', result.error);
+                alert('Unable to play: ' + result.error);
+
+            };
+
+        };
+
+    };
+
+
+    const refreshPlaybackState = async () => {
+
+        const result = await safeSpotifyAPI.getCurrentPlaybackState();
+
+        if (result.success === true && isEmpty(result.data) === false) {
+
+            dispatch({
+                type: 'SET_PLAYBACK_STATE',
+                playback_state: result.data,
+            });
+
+            if (isEmpty(result.data.item) === false) {
+
+                dispatch({
+                    type: 'SET_ITEM',
+                    item: result.data.item,
+                });
+
+            };
+
+            dispatch({
+                type: 'SET_PLAYING',
+                playing: result.data.is_playing || false,
             });
 
         } else {
 
-            spotify.play().then(() => dispatch({
-                type: "SET_PLAYING",
-                playing: true,
-            }));
+            console.log('Error getting playback state:', result.error || 'No data returned');
 
         };
 
     };
 
 
-    const skipToNextSong = () => {
+    const skipToNextSong = async () => {
+        console.log('skipToNextSong');
 
-        if (isEmpty(playback_state) === false && isEmpty(playback_state.device) === false && isEmpty(playback_state.device.id) === false) {
-            // console.log("playback_state.device.id", playback_state.device.id)
-            let deviceID = playback_state.device.id;
-            // console.log("deviceID", deviceID)
-            spotify.skipToNext({ "device_id": deviceID });
+        // * Get fresh playback state first
+        const currentState = await safeSpotifyAPI.getCurrentPlaybackState();
+        console.log('currentState', currentState);
+        const freshPlaybackState = currentState.data;
+        console.log('freshPlaybackState');
+        //* Check if we have context (playlist/album)
+        const hasValidContext = freshPlaybackState.context &&
+            (freshPlaybackState.context.type === 'playlist' ||
+                freshPlaybackState.context.type === 'album' ||
+                freshPlaybackState.context.type === 'artist' ||
+                freshPlaybackState.context.type === 'show' ||
+                freshPlaybackState.context.uri);
+
+        const hasPlaylistInState = currentPlaylist && (currentPlaylist.uri || currentPlaylist.id);
+
+        console.log('hasPlaylistInState');
+        let contextSource = [];
+
+        if (isEmpty(hasValidContext) === false) {
+            console.log('hasValidContext');
+            contextSource.push(`Spotify: ${freshPlaybackState.context?.type}`);
+
+        };
+
+        if (hasPlaylistInState) {
+            console.log('hasPlaylistInState');
+            contextSource.push(`Body.js: ${currentPlaylist?.name || 'playlist'}`);
+        };
+
+        let deviceID = freshPlaybackState.device.id;
+        let result = await safeSpotifyAPI.skipToNext();
+        console.log('result');
+        // TODO: Review
+        if (result.success === false) {
+            console.log('result.success');
+            // * If that fails, try with device_id
+            // console.log("Attempting skip with device_id...");
+            result = await safeSpotifyAPI.skipToNext(deviceID);
+
+        };
+
+        if (result.success === true) {
+            console.log('result.success');
+            // * This keeps the song/album cover in sync
+            // * Wait a moment, then check if the song actually changed
+            setTimeout(async () => {
+
+                await verifySkipOperation(freshPlaybackState, 'next');
+
+            }, 1200);
+
+        } else {
+            console.log('result.error');
+            alert('Unable to skip to next song: ' + result.error);
+
         };
 
     };
 
-    const displayCurrentlyPlaying = () => {
 
-        spotify.getMyCurrentPlayingTrack().then((response) => {
-            console.log("playing", response)
-        });
+    const skipToPreviousSong = async () => {
 
-    }
+        // * Get fresh playback state first
+        const currentState = await safeSpotifyAPI.getCurrentPlaybackState();
 
-    useEffect(() => {
+        const freshPlaybackState = currentState.data;
 
-        console.log("currently_playing", currently_playing)
+        // // * Check if we have context (playlist/album)
+        // const hasValidContext = freshPlaybackState.context &&
+        //     (freshPlaybackState.context.type === 'playlist' ||
+        //         freshPlaybackState.context.type === 'album' ||
+        //         freshPlaybackState.context.type === 'artist' ||
+        //         freshPlaybackState.context.type === 'show' ||
+        //         freshPlaybackState.context.uri);
 
-    }, [currently_playing, dispatch]);
+        // // * Also check if we have playlist info in our app state
+        // const hasPlaylistInState = currentPlaylist && currentPlaylist.uri;
+
+        let deviceID = freshPlaybackState.device.id;
+
+        // * Try using the safe API without device_id first
+        let result = await safeSpotifyAPI.skipToPrevious();
+
+        if (!result.success) {
+
+            // * If that fails, try with device_id
+            result = await safeSpotifyAPI.skipToPrevious(deviceID);
+
+        };
+
+        if (result.success) {
+
+            // * Wait a moment, then check if the song actually changed
+            setTimeout(async () => {
+
+                await verifySkipOperation(freshPlaybackState, 'previous');
+
+            }, 1200);
+
+        } else {
+
+            alert('Unable to skip to previous song: ' + result.error);
+
+        };
+
+    };
+
+
+    const verifySkipOperation = async (beforeState, direction = 'next') => {
+
+        const afterSkipState = await safeSpotifyAPI.getCurrentPlaybackState();
+
+        const beforeSong = beforeState.item;
+        const afterSong = afterSkipState.data.item;
+
+        if (afterSong?.id !== beforeSong?.id) {
+
+            refreshPlaybackState();
+
+            return;
+
+        };
+
+        // * Check repeat state
+        const repeatState = afterSkipState.data.repeat_state;
+
+        if (repeatState === 'track') {
+
+            refreshPlaybackState();
+            return;
+
+        };
+
+        // TODO: Review
+        // * Still refresh to ensure UI is in sync
+        refreshPlaybackState();
+
+    };
 
 
     return (
@@ -72,20 +244,26 @@ function Footer({ spotify }) {
 
             <div className="footer__left">
 
-                {isEmpty(item) === false && isEmpty(item.name) === false && isEmpty(item.album) === false && isEmpty(item.album.images[0]) === false && isEmpty(item.album.images[0].url) === false ? <img className="footer__albumCover" src={item.album.images[0].url} alt={item.name} /> : null}
+                {isEmpty(item) === false && isEmpty(item.name) === false && isEmpty(item.album) === false && isEmpty(item.album.images) === false && isEmpty(item.album.images[0]) === false && isEmpty(item.album.images[0].url) === false ? (
+                    <img
+                        key={`${item.id}-${Date.now()}`}
+                        className="footer__albumCover"
+                        src={item.album.images[0].url}
+                        alt={item.name}
+                    />
+                ) : null}
 
-                {isEmpty(item) === false ?
-
-                    (<div className="footer__songInfo">
+                {isEmpty(item) === false ? (
+                    <div className="footer__songInfo" key={`song-info-${item.id}`}>
                         <h4>{item.name}</h4>
                         <p>{item.artists.map((artist) => artist.name).join(", ")}</p>
-                    </div>)
-
-                    :
-                    (<div className="footer__songInfo">
+                    </div>
+                ) : (
+                    <div className="footer__songInfo">
                         <h4>No song is playing</h4>
                         <p>...</p>
-                    </div>)}
+                    </div>
+                )}
 
             </div>
 
@@ -93,7 +271,7 @@ function Footer({ spotify }) {
 
                 <ShuffleIcon className="footer__green" />
 
-                <SkipPreviousIcon className="footer__icon" onClick={() => { isEmpty(item) === false ? spotify.skipToPrevious(item) : null }} />
+                <SkipPreviousIcon className="footer__icon" onClick={() => skipToPreviousSong()} />
 
                 {isEmpty(playing) === false && playing === true ?
                     (<PauseCircleOutlineIcon onClick={handlePlayPause} fontSize="large" className="footer__icon" />)

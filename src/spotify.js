@@ -8,7 +8,7 @@ const redirectUrl = 'http://localhost:8080/';
 
 const tokenEndpoint = "https://accounts.spotify.com/api/token";
 
-const scope = 'user-read-private user-read-email user-read-currently-playing user-read-recently-played user-read-playback-state user-top-read user-modify-playback-state';
+const scope = 'user-read-private user-read-email user-read-currently-playing user-read-recently-played user-read-playback-state user-top-read user-modify-playback-state user-read-playback-position streaming';
 
 // TODO: Needs to be changed to production URL when live
 // TODO: May need to change in developer dashboard too: https://developer.spotify.com/
@@ -59,6 +59,9 @@ const currentToken = {
 };
 
 
+// *Export currentToken for access in other components
+export { currentToken };
+
 // * On page load, try to fetch auth code from current browser search URL
 const args = new URLSearchParams(window.location.search);
 const code = args.get('code');
@@ -89,6 +92,7 @@ const getToken = async (code) => {
 
 
 // * If we find a code, we're in a callback, do a token exchange
+// * code
 if (isEmpty(code) === false) {
 
     const token = await getToken(code);
@@ -140,54 +144,70 @@ export const redirectToSpotifyAuthorize = async () => {
 };
 
 
-export const refreshToken = async () => {
-
-    const response = await fetch(tokenEndpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams({
-            client_id: clientId,
-            grant_type: 'refresh_token',
-            refresh_token: currentToken.refresh_token
-        }),
-    });
-
-    return await response;
-
-};
-
-
 export const getRefreshToken = async () => {
 
-    // * Refresh token that has been previously stored
-    const refreshToken = localStorage.getItem('refresh_token');
-    const url = "https://accounts.spotify.com/api/token";
+    try {
+        // * Refresh token that has been previously stored
+        const refreshToken = localStorage.getItem('refresh_token');
 
-    const payload = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams({
-            grant_type: 'refresh_token',
-            refresh_token: refreshToken,
-            client_id: clientId
-        }),
-    };
+        if (isEmpty(refreshToken) === true) {
 
-    const body = await fetch(url, payload);
-    const response = await body.json();
+            //console.log('No refresh token available');
+            logoutClick();
+            return;
 
-    localStorage.setItem('access_token', response.accessToken);
+        };
 
-    if (isEmpty(response.refreshToken) === false) {
+        const url = "https://accounts.spotify.com/api/token";
 
-        localStorage.setItem('refresh_token', response.refreshToken);
+        const payload = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                grant_type: 'refresh_token',
+                refresh_token: refreshToken,
+                client_id: clientId
+            }),
+        };
 
-    } else {
+        const body = await fetch(url, payload);
 
+        if (isEmpty(body.ok) === true) {
+
+            // console.log('Failed to refresh token, status:', body.status);
+            logoutClick();
+            return;
+
+        };
+
+        const response = await body.json();
+
+        // * Use correct property names (access_token, not accessToken)
+        if (response.access_token) {
+
+            localStorage.setItem('access_token', response.access_token);
+
+            // * Update expiry time
+            const now = new Date();
+            const expiry = new Date(now.getTime() + (response.expires_in * 1000));
+            localStorage.setItem('expires', expiry);
+
+        };
+
+        // Some refresh responses include a new refresh token
+        if (!isEmpty(response.refresh_token)) {
+
+            localStorage.setItem('refresh_token', response.refresh_token);
+
+        };
+
+        return response.access_token;
+
+    } catch (error) {
+
+        console.log('Error refreshing token:', error);
         logoutClick();
 
     };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SpotifyWebApi from "spotify-web-api-js";
-import { redirectToSpotifyAuthorize, refreshToken, getRefreshToken } from "./spotify";
+import { redirectToSpotifyAuthorize, getRefreshToken } from "./spotify";
 import { isEmpty } from "../utilities";
 
 // * Components
