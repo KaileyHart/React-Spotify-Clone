@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import SpotifyWebApi from "spotify-web-api-js";
-import { redirectToSpotifyAuthorize, refreshToken, getRefreshToken } from "./spotify";
+import { redirectToSpotifyAuthorize, getRefreshToken } from "./spotify";
 import { isEmpty } from "../utilities";
 
 // * Components
@@ -92,11 +92,12 @@ function App() {
       spotify.getMyDevices()
         .then((data) => {
           // let availableDevices = data.body.devices;
-          console.log("data", data.devices);
+          // console.log("data", data.devices);
           // console.log("availableDevices", availableDevices);
         }, (error) => {
           console.log('Something went wrong!', error);
         });
+
 
       // * get information about user's current playback state
       spotify.getMyCurrentPlaybackState()
@@ -107,6 +108,26 @@ function App() {
           if (isEmpty(data) === false && isEmpty(data.is_playing) === false) {
 
             console.log("User is currently playing something!");
+
+            dispatch({
+              type: 'SET_PLAYBACK_STATE',
+              playback_state: data,
+            })
+
+            dispatch({
+              type: 'SET_ITEM',
+              item: data.item,
+            })
+
+            dispatch({
+              type: 'SET_PLAYBACK_STATE',
+              playback_state: data,
+            })
+
+            dispatch({
+              type: 'SET_PLAYING',
+              playing: data.is_playing,
+            })
 
           } else {
 
@@ -128,7 +149,6 @@ function App() {
     };
 
   }, [token, dispatch]);
-
 
   return (
     <div className="app">

@@ -26,13 +26,14 @@ function Body({ spotify }) {
     if (isEmpty(top_tracks) === false) {
 
       setPlaylistTitle("Your Top Tracks");
-      // setPlaylistDescription("Your Top Tracks");
+      setPlaylistDescription("Your most played tracks from the past year");
+      setCurrentPlaylistID("user-top-tracks");
 
       if (isEmpty(top_tracks.items) === false) {
 
         setPlaylistItems(top_tracks.items);
 
-        if (isEmpty(top_tracks.items[0]) === false && isEmpty(top_tracks.items[0].url) === false) {
+        if (isEmpty(top_tracks.items[0]) === false && isEmpty(top_tracks.items[0].album) === false && isEmpty(top_tracks.items[0].album.images) === false && isEmpty(top_tracks.items[0].album.images[0]) === false) {
 
           setPlaylistAlbumURL(top_tracks.items[0].album.images[0].url);
 
@@ -40,11 +41,37 @@ function Body({ spotify }) {
 
       };
 
+      // * Create a playlist-like context for top tracks. Generates a unique URI for top tracks context.
+      const topTracksPlaylistContext = {
+        id: "user-top-tracks",
+        name: "Your Top Tracks",
+        description: "Your most played tracks from the past year",
+        type: "user-top-tracks",
+        tracks: {
+          items: top_tracks.items || [],
+          total: top_tracks.items?.length || 0
+        },
+        uri: "spotify:user:top-tracks",
+        images: top_tracks.items?.[0]?.album?.images || [],
+        owner: {
+          display_name: "Spotify"
+        },
+        external_urls: {
+          spotify: "https://open.spotify.com/collection/tracks"
+        }
+      };
+
+      // * Dispatch the top tracks as a playlist context
+      dispatch({
+        type: "SET_PLAYLIST",
+        playlist: topTracksPlaylistContext,
+      });
+
     };
 
     if (isEmpty(playlist) === false) {
 
-      setPlaylistDescription("");
+      setPlaylistDescription(playlist.description || "");
 
       if (isEmpty(playlist.id) === false) {
 
@@ -70,73 +97,366 @@ function Body({ spotify }) {
 
       };
 
+      // * Ensure regular playlist context is available
+      dispatch({
+        type: "SET_PLAYLIST",
+        playlist: playlist,
+      });
+
     };
 
+    // TODO: Review putting the dispatch here. It could run into performance issues later. 
   }, [playlist, top_tracks, dispatch]);
 
 
   const playPlaylist = (playing, id) => {
 
     if (isEmpty(playing) === false && playing === true) {
-
-      spotify.pause();
-
-      dispatch({
-        type: "SET_PLAYING",
-        playing: false,
-      });
-
-    } else {
-
-      spotify.play({ context_uri: `spotify:playlist:${id}` })
+      // console.log("pause");
+      spotify.pause()
         .then(() => {
 
-          spotify.getMyCurrentPlayingTrack().then((response) => {
-
-            dispatch({
-              type: "SET_ITEM",
-              item: response.item,
-            });
-
-            dispatch({
-              type: "SET_PLAYING",
-              playing: true,
-            });
-
+          dispatch({
+            type: "SET_PLAYING",
+            playing: false,
           });
 
         });
 
+    } else {
+
+      // * Handle the special case of Top Tracks (no real playlist URI)
+      if (id === "user-top-tracks" || (isEmpty(playlist) && !isEmpty(top_tracks))) {
+
+        playTopTracksCollection();
+
+      } else {
+        // * Use the full playlist URI if available, otherwise construct from ID
+        const playlistUri = playlist?.uri || `spotify:playlist:${id}`;
+
+        spotify.play({ context_uri: playlistUri })
+          .then(() => {
+            // ? Delay to ensure the playlist is loaded?
+            setTimeout(() => updatePlaylistPlaybackState(), 500);
+
+          })
+          .catch((error) => {
+
+            // * Fallback to track collection if playlist URI fails
+            if (isEmpty(playlistItems) === false) {
+
+              playTrackCollection();
+
+            };
+
+          });
+
+      };
+
     };
 
   };
 
 
-  const playSong = (id) => {
+  const playTopTracksCollection = () => {
 
-    if (isEmpty(id) === false) {
+    if (isEmpty(top_tracks) || isEmpty(top_tracks.items)) {
 
-      spotify.play({ uris: [`spotify:track:${id}`] })
-        .then(() => {
+      return;
 
-          spotify.getMyCurrentPlayingTrack()
-            .then((response) => {
-              dispatch({
-                type: "SET_ITEM",
-                item: response.item,
-              });
+    };
 
-              dispatch({
-                type: "SET_PLAYING",
-                playing: true,
-              });
+    // * Create array of track URIs from top tracks
+    const trackUris = top_tracks.items.map(item => {
 
-            });
+      if (isEmpty(item.id) === false) {
+
+        return `spotify:track:${item.id}`;
+
+      };
+
+      if (isEmpty(item.track) === false && isEmpty(item.track.id) === false) {
+
+        return `spotify:track:${item.track.id}`;
+
+      };
+
+      return null;
+
+    }).filter(uri => uri !== null);
+
+    spotify.play({ uris: trackUris })
+      .then(() => {
+
+        // ? Delay to ensure the playlist is loaded?
+        setTimeout(() => updatePlaylistPlaybackState(), 500);
+
+      })
+      .catch((error) => {
+
+        console.log("Error playing top tracks collection:", error);
+
+      });
+
+  };
+
+
+  const playTrackCollection = () => {
+
+    if (isEmpty(playlistItems)) {
+
+      return;
+
+    };
+
+    // * Create array of track URIs from playlist items
+    const trackUris = playlistItems.map(item => {
+
+      if (isEmpty(item.id) === false) {
+
+        return `spotify:track:${item.id}`;
+
+      };
+
+      if (isEmpty(item.track) === false && isEmpty(item.track.id) === false) {
+
+        return `spotify:track:${item.track.id}`;
+
+      };
+
+      return null;
+
+    }).filter(uri => uri !== null);
+
+    spotify.play({ uris: trackUris })
+      .then(() => {
+
+        // ? Delay to ensure the playlist is loaded?
+        setTimeout(() => updatePlaylistPlaybackState(), 500);
+
+      })
+      .catch((error) => {
+
+        console.log("Error playing track collection:", error);
+
+      });
+
+  };
+
+
+  const updatePlaylistPlaybackState = () => {
+
+    spotify.getMyCurrentPlayingTrack().then((response) => {
+      if (response && response.item) {
+        dispatch({
+          type: 'SET_CURRENTLY_PLAYING',
+          currently_playing: response,
         });
 
+        dispatch({
+          type: 'SET_ITEM',
+          item: response.item,
+        });
+
+        dispatch({
+          type: "SET_PLAYING",
+          playing: true,
+        });
+
+        // * Ensure current playlist context is maintained in DataLayer
+        let currentPlaylistContext = null;
+
+        if (isEmpty(top_tracks) === false && (currentPlaylistID === "user-top-tracks" || isEmpty(playlist))) {
+
+          // * Create top tracks context
+          currentPlaylistContext = {
+            id: "user-top-tracks",
+            name: "Your Top Tracks",
+            description: "Your most played tracks from the past year",
+            type: "user-top-tracks",
+            tracks: {
+              items: top_tracks.items,
+              total: top_tracks.items?.length || 0
+            },
+            uri: "spotify:user:top-tracks",
+            images: top_tracks.items?.[0]?.album?.images || []
+          };
+
+        } else if (isEmpty(playlist) === false) {
+
+          // * Use regular playlist context
+          currentPlaylistContext = playlist;
+
+        };
+
+        if (currentPlaylistContext) {
+
+          dispatch({
+            type: "SET_PLAYLIST",
+            playlist: currentPlaylistContext,
+          });
+
+        };
+
+      };
+
+    }).catch((error) => {
+
+      console.log("Error updating playback state:", error);
+
+    });
+
+  };
+
+
+  const playSong = (track, currentPlaylistContext = null) => {
+
+    if (isEmpty(track) === false) {
+
+      let trackToPlay = null;
+      let trackUri = null;
+
+      // * Get track information
+      if (isEmpty(track.id) === false) {
+
+        trackToPlay = track;
+        trackUri = `spotify:track:${track.id}`;
+
+      } else if (isEmpty(track.track) === false && isEmpty(track.track.id) === false) {
+
+        trackToPlay = track.track;
+        trackUri = `spotify:track:${track.track.id}`;
+
+      };
+
+      // * Play with playlist context if available
+      if (isEmpty(playlist) === false && isEmpty(playlist.uri) === false && playlist.id !== "user-top-tracks") {
+
+        spotify.play({
+          context_uri: playlist.uri,
+          offset: { uri: trackUri }
+        })
+          .then(() => {
+            updatePlaybackState(trackToPlay);
+          })
+          .catch((error) => {
+            playWithTrackCollection(trackToPlay, trackUri);
+          });
+
+      } else if (!isEmpty(playlistItems) && playlistItems.length > 1) {
+
+        playWithTrackCollection(trackToPlay, trackUri);
+
+      } else {
+
+        playSingleTrack(trackToPlay, trackUri);
+
+      };
+
     };
 
   };
+
+
+  const playWithTrackCollection = (trackToPlay, selectedTrackUri) => {
+
+    // * Create URIs array from current playlist items
+    const trackUris = playlistItems.map(item => {
+
+      if (isEmpty(item.id) === false) {
+
+        return `spotify:track:${item.id}`;
+
+      };
+
+      if (isEmpty(item.track) === false && isEmpty(item.track.id) === false) {
+
+        return `spotify:track:${item.track.id}`;
+
+      };
+
+      return null;
+
+    }).filter(uri => uri !== null);
+
+    spotify.play({
+      uris: trackUris,
+      offset: { uri: selectedTrackUri }
+    })
+      .then(() => {
+        updatePlaybackState(trackToPlay);
+      })
+      .catch((error) => {
+
+        playSingleTrack(trackToPlay, selectedTrackUri);
+
+      });
+
+  };
+
+  const playSingleTrack = (trackToPlay, trackUri) => {
+
+    spotify.play({ uris: [trackUri] })
+      .then(() => {
+
+        updatePlaybackState(trackToPlay);
+
+      })
+      .catch((error) => {
+
+        console.log("Error playing single track:", error);
+
+      });
+
+  };
+
+  const updatePlaybackState = (track) => {
+    dispatch({
+      type: "SET_ITEM",
+      item: track,
+    });
+
+    dispatch({
+      type: "SET_PLAYING",
+      playing: true,
+    });
+
+    // *  Dispatch the  playlist context to make it available in Footer
+    let contextToDispatch = null;
+
+    if (currentPlaylistID === "user-top-tracks" || (isEmpty(top_tracks) === false && isEmpty(playlist) === true)) {
+
+      // * Create top tracks context
+      contextToDispatch = {
+        id: "user-top-tracks",
+        name: "Your Top Tracks",
+        description: "Your most played tracks from the past year",
+        type: "user-top-tracks",
+        tracks: {
+          items: top_tracks.items || [],
+          total: top_tracks.items?.length || 0
+        },
+        uri: "spotify:user:top-tracks",
+        images: top_tracks.items?.[0]?.album?.images || []
+      };
+
+    } else if (isEmpty(playlist) === false) {
+
+      contextToDispatch = playlist;
+
+    };
+
+    if (contextToDispatch) {
+
+      dispatch({
+        type: "SET_PLAYLIST",
+        playlist: contextToDispatch,
+      });
+
+    };
+
+  };
+
 
   return (
     <div className="body">
@@ -193,7 +513,13 @@ function Body({ spotify }) {
 
         {isEmpty(playlistItems) === false
           ? playlistItems.map((item, index) => (
-            <SongRow key={index} playSong={() => playSong(item.id)} track={item} trackNumber={index}
+            <SongRow
+              key={index}
+              playSong={(track, playlistContext) => playSong(track, playlist)}
+              isPlaying={playing}
+              track={item}
+              trackNumber={index}
+              currentPlaylist={playlist || { id: currentPlaylistID, name: playlistTitle }}
             />
           ))
           : null}

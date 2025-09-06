@@ -3,7 +3,7 @@ import './SongRow.css';
 import { isEmpty, convertDate, millisecondsToMinutesAndSeconds } from "../utilities";
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 
-function SongRow({ trackNumber, track, playSong }) {
+function SongRow({ trackNumber, track, playSong, currentPlaylist }) {
 
     trackNumber = trackNumber + 1;
     let trackName = "";
@@ -39,8 +39,9 @@ function SongRow({ trackNumber, track, playSong }) {
 
     };
 
+
     return (
-        <div className="songRow" onMouseOver={(event) => { setIsHovering(true) }} onMouseOut={(event) => { setIsHovering(false) }} onClick={() => playSong(track.id)}>
+        <div className="songRow" onMouseOver={(event) => { setIsHovering(true) }} onMouseOut={(event) => { setIsHovering(false) }} onClick={() => playSong(track, currentPlaylist)}>
 
             <div className="songRow__info">
 
